@@ -9,7 +9,7 @@ from pg_scaffold.generator.model_generator import ModelGenerator
 from pg_scaffold.generator.schema_generator import SchemaGenerator
 from pg_scaffold.generator.crud_generator import CRUDGenerator
 from pg_scaffold.generator.api_generator import APIGenerator
-
+from pg_scaffold.generator.main_generator import MainGenerator
 
 class FriendlyArgumentParser(argparse.ArgumentParser):
     def error(self, message):
@@ -49,6 +49,8 @@ def main():
     
     api_generator = APIGenerator(args.sql_json_dir, args.output_dir)
     api_generator.generate()
-
+    
+    main_generator = MainGenerator(args.sql_json_dir, args.output_dir)
+    main_generator.generate()
 if __name__ == "__main__":
     main()

@@ -35,8 +35,8 @@ def map_pg_type_to_python(pg_col: dict, optional:bool = False) -> str:
         "UUID": "UUID",
     }
     data_type = mapping.get(pg_type.upper(), "str")  # default fallback
-    data_type = f"Optional[{data_type}] = None" if server_default else data_type 
-    return  f"Optional[{data_type}] = None" if optional else data_type 
+    
+    return  f"Optional[{data_type}] = None" if optional or server_default else data_type
 
 
 def ensure_package_dirs(path: str):

@@ -1,6 +1,7 @@
 # app/generator/model_generator.py
 
 import os
+import shutil
 from jinja2 import Environment, FileSystemLoader
 from pg_scaffold.generator.base import CodeGenerator
 from pg_scaffold.generator.utils import snake_to_camel, map_pg_type_to_python
@@ -12,7 +13,9 @@ class CRUDGenerator(CodeGenerator):
     def __init__(self, sql_json_dir: str, output_dir: str):
         output_dir = os.path.join(output_dir, "crud")
         super().__init__(sql_json_dir, output_dir, "crud.py.j2")
-        
+        src = os.path.join(self.template_dir, "crud_base.py")
+        dst = os.path.join(output_dir, "base.py")
+        shutil.copyfile(src, dst)
 
             
     def generate(self) -> None:

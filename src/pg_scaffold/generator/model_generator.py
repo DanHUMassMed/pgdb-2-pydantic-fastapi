@@ -1,7 +1,7 @@
 # app/generator/model_generator.py
 
 import os
-
+import shutil
 from pg_scaffold.generator.base import CodeGenerator
 
 from pg_scaffold.generator.utils import snake_to_camel,map_pg_type_to_sqlalchemy
@@ -11,7 +11,9 @@ class ModelGenerator(CodeGenerator):
     def __init__(self, sql_json_dir: str, output_dir: str):
         output_dir = os.path.join(output_dir, "models")
         super().__init__(sql_json_dir, output_dir, "model.py.j2")
-        
+        src = os.path.join(self.template_dir, "model_base.py")
+        dst = os.path.join(output_dir, "base.py")
+        shutil.copyfile(src, dst)        
 
     def _create_imports(self, table_schema: dict) -> str:
         """Create SQLAlchemy import string based on table schema."""

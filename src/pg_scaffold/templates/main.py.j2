@@ -5,7 +5,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 import debugpy
-from app.api.v1 import conferences, attendees
+from app.api.v1 import {{", ".join(table_names)}}
 
 load_dotenv() 
 REACT_APP_URL = os.getenv("REACT_APP_URL", "http://localhost:3000")
@@ -35,8 +35,9 @@ app.add_middleware(
 )
 
 
-app.include_router(conferences.router, prefix=API_VERSION_STR, tags=["conferences"])
-app.include_router(attendees.router, prefix=API_VERSION_STR, tags=["attendees"])
+{% for table_name in table_names %}
+app.include_router({{ table_name }}.router, prefix=API_VERSION_STR, tags=["{{ table_name }}"])
+{% endfor %}
 
 @app.get("/")
 def read_root():
