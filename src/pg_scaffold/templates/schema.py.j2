@@ -1,0 +1,29 @@
+from pydantic import BaseModel, EmailStr
+from typing import Optional
+from datetime import datetime, date
+from uuid import UUID
+
+
+class {{ class_name }}Create(BaseModel):
+{% for column in columns %}
+   {% if not column.primary_key %}
+    {{ column.name }}: {{ map_pg_type_to_python(column, column.nullable) }}
+   {% endif -%}
+{% endfor %}
+
+
+class {{ class_name }}Read(BaseModel):
+{% for column in columns %}
+    {{ column.name }}: {{ map_pg_type_to_python(column, column.nullable) }}
+{% endfor %}
+
+    class Config:
+        from_attributes = True  # Enables ORM model-to-schema conversion
+
+class {{ class_name }}Update(BaseModel):
+{% for column in columns %}
+   {% if not column.primary_key %}
+    {{ column.name }}: {{ map_pg_type_to_python(column, True) }}
+   {% endif -%}   
+{% endfor %}
+

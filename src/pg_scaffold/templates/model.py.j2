@@ -1,0 +1,16 @@
+from sqlalchemy import {{ sqlalchemy_imports }}
+from sqlalchemy.orm import relationship
+from app.models.base import Base
+
+
+class {{ class_name }}(Base):
+    __tablename__ = '{{ table_name }}'
+
+{% for column in columns %}
+    {{ column.name }} = Column({{ map_pg_type_to_sqlalchemy(column.type) -}}
+                                {{ get_foreign_key_for_column(column.name) -}}
+                                 {% if column.primary_key -%}, primary_key=True{% endif -%}
+                                 {% if column.index -%}, index=True{% endif -%}
+                                 {% if column.unique -%}, unique=True{% endif -%}
+                                 {% if column.nullable is not none and not column.nullable -%}, nullable=False{% endif -%})
+{% endfor %}
