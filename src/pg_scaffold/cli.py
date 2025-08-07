@@ -29,12 +29,12 @@ def main():
 
     # Set default for sql_json_dir if not provided
     if args.sql_json_dir is None:
-        args.sql_json_dir = os.path.join(args.output_dir, "metadata")
+        args.sql_json_dir = os.path.join(args.output_dir, "schema_json")
     
     # Step 1: Inspect database
     if args.pgdb:
         inspector = DatabaseInspector(args.pgdb, args.output_dir)
-        inspector.generate_json()
+        inspector.generate_scheme_json()
     
     # Step 2: Generate models
     model_generator = ModelGenerator(args.sql_json_dir, args.output_dir)
@@ -44,13 +44,14 @@ def main():
     schema_generator = SchemaGenerator(args.sql_json_dir, args.output_dir)
     schema_generator.generate()
     
-    crud_generator = CRUDGenerator(args.sql_json_dir, args.output_dir)
-    crud_generator.generate()  
+    # crud_generator = CRUDGenerator(args.sql_json_dir, args.output_dir)
+    # crud_generator.generate()  
     
-    api_generator = APIGenerator(args.sql_json_dir, args.output_dir)
-    api_generator.generate()
+    # api_generator = APIGenerator(args.sql_json_dir, args.output_dir)
+    # api_generator.generate()
     
-    main_generator = MainGenerator(args.sql_json_dir, args.output_dir)
-    main_generator.generate()
+    # main_generator = MainGenerator(args.sql_json_dir, args.output_dir)
+    # main_generator.generate()
+    
 if __name__ == "__main__":
     main()

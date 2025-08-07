@@ -14,3 +14,16 @@ class {{ class_name }}(Base):
                                  {% if column.unique -%}, unique=True{% endif -%}
                                  {% if column.nullable is not none and not column.nullable -%}, nullable=False{% endif -%})
 {% endfor %}
+
+     # Relationship to Attendee
+ {% for relationship in relationships %}
+    {% if relationship.relation_type =="foreign_key" %}
+    {{ relationship.relationship_variable }} = relationship("{{relationship.related_model }}", back_populates="{{relationship.back_populates}}" )
+    {% endif -%}
+ {% endfor %}
+
+{% for relationship in relationships %}
+    {% if relationship.relation_type =="reverse" %}
+    {{ relationship.relationship_variable }} = relationship("{{relationship.related_model }}", back_populates="{{relationship.back_populates}}" {% if not relationship.use_list -%}, uselist=False{% endif -%})
+    {% endif -%}
+ {% endfor %}

@@ -4,7 +4,7 @@ import os
 import shutil
 from pg_scaffold.generator.base import CodeGenerator
 
-from pg_scaffold.generator.utils import snake_to_camel,map_pg_type_to_sqlalchemy
+from pg_scaffold.generator.utils import table_name_to_class_name, map_pg_type_to_sqlalchemy
 
 class ModelGenerator(CodeGenerator):
     
@@ -15,6 +15,11 @@ class ModelGenerator(CodeGenerator):
         dst = os.path.join(output_dir, "base.py")
         shutil.copyfile(src, dst)        
 
+    def _get_relationships(self, table_schema: dict, relation_type: str ="foreign_key"):
+        relationships = table_schema.get("relationships",[])
+        relationships_of_type = [rel for rel in relationships if rel.get("relation_type") == relation_type] # type: ignore
+        return relationships_of_type
+        
     def _create_imports(self, table_schema: dict) -> str:
         """Create SQLAlchemy import string based on table schema."""
         type_set = set()
@@ -26,22 +31,21 @@ class ModelGenerator(CodeGenerator):
             type_set.add(sqlalchemy_type)
 
         # 2. Add ForeignKey if foreign keys exist
-        if table_schema.get("foreign_keys"):
+        if self._get_relationships(table_schema, "foreign_key"):
             type_set.add("ForeignKey")
 
         # 3. Ensure 'Column' is present in final import line
         full_imports = ["Column"] + sorted(type_set)
         return ", ".join(full_imports)
 
-    def _get_foreign_keys(self, foreign_keys_json):
+    def _get_foreign_keys(self, table_schema):
+        foreign_key_relationships = self._get_relationships(table_schema, "foreign_key")
         foreign_keys_dict = {}
         
-        for fk in foreign_keys_json:
-            for constrained_col, referred_col in zip(
-                fk["constrained_columns"], fk["referred_columns"]
-            ):
-                reference = f"{fk['referred_table']}.{referred_col}"
-                foreign_keys_dict[constrained_col] = f"ForeignKey('{reference}')"
+        for fk in foreign_key_relationships:
+            reference = f"{fk['referred_table']}.{fk['referred_column']}"
+            foreign_keys_dict[fk["constrained_column"]] = f"ForeignKey('{reference}')" # type: ignore
+            
         self.foreign_keys_dict = foreign_keys_dict
         return foreign_keys_dict
 
@@ -55,18 +59,19 @@ class ModelGenerator(CodeGenerator):
             
     def generate(self) -> None:
 
-        for table_name, info in self.metadata.items():
-            self._get_foreign_keys(info.get("foreign_keys", []))
+        for table_name, table_info in self.schema.items():
+            self._get_foreign_keys(table_info)
             print(f"foreign_keys_dict: {self.foreign_keys_dict}")
             rendered = self.template.render(
                 table_name = table_name,
-                class_name = snake_to_camel(table_name),
-                columns = info.get("columns", []),
-                sqlalchemy_imports = self._create_imports(info),
+                class_name = table_info["class_name"],
+                columns = table_info.get("columns", []),
+                relationships = table_info.get("relationships",[]),
+                sqlalchemy_imports = self._create_imports(table_info),
                 map_pg_type_to_sqlalchemy = map_pg_type_to_sqlalchemy,
                 get_foreign_key_for_column = self._get_foreign_key_for_column
             )
 
-            output_path = os.path.join(self.output_dir, f"{table_name}.py")
+            output_path = os.path.join(self.output_dir, f"{table_info["file_name"]}.py")
             with open(output_path, "w") as f:
                 f.write(rendered)

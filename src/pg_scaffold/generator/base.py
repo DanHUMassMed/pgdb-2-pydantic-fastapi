@@ -17,7 +17,7 @@ class CodeGenerator(ABC):
         print(f"Output directory: {self.output_dir}")
         ensure_package_dirs(self.output_dir)
         
-        self.metadata = self._load_metadata_from_dir(sql_json_dir)
+        self.schema = self._load_schema_from_dir(sql_json_dir)
         self.template_dir = os.path.join(os.path.dirname(__file__), "../templates")
         
         self.env = Environment(
@@ -30,11 +30,11 @@ class CodeGenerator(ABC):
         
 
 
-    def _load_metadata_from_dir(self, metadata_dir: str):
-        """Load all JSON files from the metadata directory into self.metadata"""
+    def _load_schema_from_dir(self, schema_dir: str):
+        """Load all JSON files from the schema directory into self.schema"""
         metadata = {}
 
-        json_files = glob.glob(os.path.join(metadata_dir, "*.json"))
+        json_files = glob.glob(os.path.join(schema_dir, "*.json"))
         for file_path in json_files:
             table_name = os.path.splitext(os.path.basename(file_path))[0]
             with open(file_path, "r", encoding="utf-8") as f:

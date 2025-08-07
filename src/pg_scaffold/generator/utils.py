@@ -1,10 +1,52 @@
 # app/generator/utils.py
 import os
 from typing import Optional
+import inflect
 
-def snake_to_camel(snake_str: str) -> str:
+inflector = inflect.engine()
+
+def is_plural(word):
+    return inflector.singular_noun(word) is not False
+
+def singular(word):
+    if is_plural(word):
+        return inflector.singular_noun(word)
+    return word
+
+def plural(word):
+    if is_plural(word):
+        return word
+    return inflector.plural(word)
+
+
+def snake_to_pascal(snake_str: str) -> str:
         return ''.join(word.capitalize() for word in snake_str.split('_'))
     
+def table_name_to_class_name(table_name: str) -> str:
+    parts: list[str] = table_name.split('_')
+
+    if parts:
+        last_word = singular(parts[-1])
+        parts[-1] = last_word # type: ignore
+
+    return ''.join(word.capitalize() for word in parts)
+
+def table_name_to_file_name(table_name: str) -> str:
+    parts: list[str] = table_name.split('_')
+
+    if parts:
+        last_word = singular(parts[-1])
+        parts[-1] = last_word # type: ignore
+
+    return '_'.join(parts)
+
+def table_name_to_variable_name(table_name: str, use_singular: bool) -> str:
+    parts: list[str] = table_name.split('_')
+    if parts and use_singular:
+        parts[-1] = singular(parts[-1])
+
+    return '_'.join(parts)  # keeps variable_name format
+
 def map_pg_type_to_sqlalchemy(pg_type: str) -> str:
     """Map PostgreSQL type to SQLAlchemy type."""
     mapping = {

@@ -3,7 +3,7 @@
 import os
 
 from pg_scaffold.generator.base import CodeGenerator
-from pg_scaffold.generator.utils import snake_to_camel, map_pg_type_to_python
+from pg_scaffold.generator.utils import snake_to_pascal, map_pg_type_to_python
 
 
 class APIGenerator(CodeGenerator):
@@ -14,11 +14,11 @@ class APIGenerator(CodeGenerator):
 
             
     def generate(self) -> None:
-        for table_name, info in self.metadata.items():
+        for table_name, info in self.schema.items():
             
             rendered = self.template.render(
                 table_name = table_name,
-                class_name = snake_to_camel(table_name),
+                class_name = snake_to_pascal(table_name),
             )
             
             output_path = os.path.join(self.output_dir, f"{table_name}.py")

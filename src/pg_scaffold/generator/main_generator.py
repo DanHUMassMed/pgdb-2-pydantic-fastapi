@@ -3,7 +3,7 @@
 import os
 import shutil
 from pg_scaffold.generator.base import CodeGenerator
-from pg_scaffold.generator.utils import snake_to_camel, map_pg_type_to_python
+from pg_scaffold.generator.utils import snake_to_pascal, map_pg_type_to_python
 from pg_scaffold.generator.utils import ensure_package_dirs
 
 class MainGenerator(CodeGenerator):
@@ -18,7 +18,7 @@ class MainGenerator(CodeGenerator):
             
     def generate(self) -> None:
         rendered = self.template.render(
-            table_names = self.metadata.keys()
+            table_names = self.schema.keys()
         )
         
         output_path = os.path.join(self.output_dir, "main.py")
