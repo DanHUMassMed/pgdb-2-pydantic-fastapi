@@ -1,2 +1,4 @@
 __pycache__/
 app/
+custom_qrcode.png
+.DS_Store

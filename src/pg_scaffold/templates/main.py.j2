@@ -5,7 +5,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 import debugpy
-from app.api.v1 import {{", ".join(table_names)}}
+from app.api.v1 import {{", ".join(file_names)}}
 
 load_dotenv() 
 REACT_APP_URL = os.getenv("REACT_APP_URL", "http://localhost:3000")
@@ -35,8 +35,8 @@ app.add_middleware(
 )
 
 
-{% for table_name in table_names %}
-app.include_router({{ table_name }}.router, prefix=API_VERSION_STR, tags=["{{ table_name }}"])
+{% for file_name in file_names %}
+app.include_router({{ file_name }}.router, prefix=API_VERSION_STR, tags=["{{ file_name }}"])
 {% endfor %}
 
 @app.get("/")

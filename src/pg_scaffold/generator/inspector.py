@@ -91,7 +91,8 @@ class DatabaseInspector:
             )
             print(f"is one-to-one: {is_one_to_one} for {constrained_col} in {table_name}")
             relationships.append({
-                "relationship_owner": table_name,
+                "relationship_table_name": table_name,
+                "related_file_name": table_name_to_file_name(referred_table),
                 "related_model": table_name_to_class_name(referred_table),
                 "relationship_variable": table_name_to_variable_name(referred_table, use_singular = True),
                 "back_populates": table_name_to_variable_name(table_name, use_singular = is_one_to_one),
@@ -104,7 +105,9 @@ class DatabaseInspector:
             })
 
             reverse_relationships.append({
-                "relationship_owner": referred_table,
+                "relationship_table_name": referred_table,
+                "relationship_file_name": table_name_to_file_name(referred_table),
+                "related_file_name": table_name_to_file_name(table_name),
                 "related_model": table_name_to_class_name(table_name),
                 "relationship_variable": table_name_to_variable_name(table_name, use_singular=is_one_to_one),
                 "back_populates": table_name_to_variable_name(referred_table, use_singular=True),
@@ -130,7 +133,7 @@ class DatabaseInspector:
             reverse_relationships.extend(reverse) # type: ignore
             
         for relationship in reverse_relationships:
-            owner = relationship["relationship_owner"]
+            owner = relationship["relationship_table_name"]
             self.schema[owner]["relationships"].append(relationship)  # type: ignore
                 
         return self.schema # type: ignore

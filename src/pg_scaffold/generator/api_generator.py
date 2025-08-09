@@ -14,14 +14,14 @@ class APIGenerator(CodeGenerator):
 
             
     def generate(self) -> None:
-        for table_name, info in self.schema.items():
+        for table_name, table_info in self.schema.items():
             
             rendered = self.template.render(
                 table_name = table_name,
-                class_name = snake_to_pascal(table_name),
+                class_name = table_info["class_name"],
+                file_name = table_info["file_name"],
             )
             
-            output_path = os.path.join(self.output_dir, f"{table_name}.py")
-            print(f"Writing API file for {table_name} to: {output_path}")
+            output_path = os.path.join(self.output_dir, f"{table_info["file_name"]}.py")
             with open(output_path, "w") as f:
                 f.write(rendered)

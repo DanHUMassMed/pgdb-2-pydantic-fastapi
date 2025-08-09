@@ -1,10 +1,38 @@
+from sqlalchemy.orm import Query, joinedload
 from app.crud.base import CRUDBase
-from app.models.{{ table_name }} import {{ class_name }}
-from app.schemas.{{ table_name }} import {{ class_name }}Create, {{ class_name }}Update
+from app.models.{{ file_name }} import {{ class_name }}
+from app.schemas.{{ file_name }} import {{ class_name }}Create, {{ class_name }}Update
+
 
 
 class CRUD{{ class_name }}(CRUDBase[{{ class_name }}, {{ class_name }}Create, {{ class_name }}Update]):
-    pass
+{% if relationships %}
+    def _apply_get_hook(self, query: Query) -> Query:
+        return query.options(
+            {% for relationship in relationships %}
+            joinedload({{ class_name }}.{{ relationship.relationship_variable }}),
+            {% endfor %}
+        )
 
-{{ table_name }} = CRUD{{ class_name }}({{ class_name }})
+    def _apply_multi_hook(self, query: Query) -> Query:
+        return query.options(
+            {% for relationship in relationships %}
+            joinedload({{ class_name }}.{{ relationship.relationship_variable }}),
+            {% endfor %}
+        )
+
+    def _apply_filter_hook(self, query: Query) -> Query:
+        return query.options(
+            {% for relationship in relationships %}
+            joinedload({{ class_name }}.{{ relationship.relationship_variable }}),
+            {% endfor %}
+        )
+
+
+{% else %}
+    pass # No relationships to handle
+{% endif -%} 
+
+{{ file_name }} = CRUD{{ class_name }}({{ class_name }})
+
 

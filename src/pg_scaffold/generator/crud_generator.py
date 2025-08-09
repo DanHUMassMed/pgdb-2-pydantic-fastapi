@@ -19,13 +19,15 @@ class CRUDGenerator(CodeGenerator):
 
             
     def generate(self) -> None:
-        for table_name, info in self.schema.items():
+        for table_name, table_info in self.schema.items():
             
             rendered = self.template.render(
                 table_name = table_name,
-                class_name = snake_to_pascal(table_name),
+                file_name = table_info["file_name"],
+                class_name = table_info["class_name"],
+                relationships = table_info.get("relationships",[]),
             )
             
-            output_path = os.path.join(self.output_dir, f"{table_name}.py")
+            output_path = os.path.join(self.output_dir, f"{table_info["file_name"]}.py")
             with open(output_path, "w") as f:
                 f.write(rendered)

@@ -44,14 +44,17 @@ def main():
     schema_generator = SchemaGenerator(args.sql_json_dir, args.output_dir)
     schema_generator.generate()
     
-    # crud_generator = CRUDGenerator(args.sql_json_dir, args.output_dir)
-    # crud_generator.generate()  
-    
-    # api_generator = APIGenerator(args.sql_json_dir, args.output_dir)
-    # api_generator.generate()
-    
-    # main_generator = MainGenerator(args.sql_json_dir, args.output_dir)
-    # main_generator.generate()
+    # Step 4: Generate CRUD operations
+    crud_generator = CRUDGenerator(args.sql_json_dir, args.output_dir)
+    crud_generator.generate()  
+
+    # Step 5: Generate API endpoints    
+    api_generator = APIGenerator(args.sql_json_dir, args.output_dir)
+    api_generator.generate()
+
+    # Step 6: Generate main application file    
+    main_generator = MainGenerator(args.sql_json_dir, args.output_dir)
+    main_generator.generate()
     
 if __name__ == "__main__":
     main()

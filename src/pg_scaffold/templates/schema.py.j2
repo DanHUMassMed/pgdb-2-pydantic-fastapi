@@ -1,8 +1,7 @@
 from pydantic import BaseModel, EmailStr
-from typing import Optional
+from typing import List, Optional
 from datetime import datetime, date
 from uuid import UUID
-
 
 class {{ class_name }}Create(BaseModel):
 {% for column in columns %}
@@ -17,6 +16,15 @@ class {{ class_name }}Read(BaseModel):
     {{ column.name }}: {{ map_pg_type_to_python(column, column.nullable) }}
 {% endfor %}
 
+     # Relationships
+{% for relationship in relationships %}
+   {% if relationship.use_list %}
+    {{ relationship.relationship_variable }}: Optional[List["{{relationship.related_model }}Read"]] = None
+   {% else %}
+    {{ relationship.relationship_variable }}: Optional["{{relationship.related_model }}Read"] = None
+   {% endif -%}
+{% endfor %}
+
     class Config:
         from_attributes = True  # Enables ORM model-to-schema conversion
 
@@ -26,4 +34,7 @@ class {{ class_name }}Update(BaseModel):
     {{ column.name }}: {{ map_pg_type_to_python(column, True) }}
    {% endif -%}   
 {% endfor %}
+
+
+
 

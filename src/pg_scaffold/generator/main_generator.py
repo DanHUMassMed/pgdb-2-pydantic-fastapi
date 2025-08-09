@@ -17,8 +17,10 @@ class MainGenerator(CodeGenerator):
         shutil.copyfile(src, dst)
             
     def generate(self) -> None:
+        file_names = [info["file_name"] for info in self.schema.values()]
+        
         rendered = self.template.render(
-            table_names = self.schema.keys()
+            file_names = file_names
         )
         
         output_path = os.path.join(self.output_dir, "main.py")
