@@ -3,7 +3,7 @@
 import os
 import shutil
 from pg_scaffold.generator.base import CodeGenerator
-from pg_scaffold.generator.utils import snake_to_pascal, map_pg_type_to_python
+from pg_scaffold.generator.utils import snake_to_pascal, map_pg_column_to_python
 from pg_scaffold.generator.utils import ensure_package_dirs
 
 class MainGenerator(CodeGenerator):

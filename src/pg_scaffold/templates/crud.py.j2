@@ -33,6 +33,6 @@ class CRUD{{ class_name }}(CRUDBase[{{ class_name }}, {{ class_name }}Create, {{
     pass # No relationships to handle
 {% endif -%} 
 
-{{ file_name }} = CRUD{{ class_name }}({{ class_name }})
+crud = CRUD{{ class_name }}({{ class_name }})
 
 

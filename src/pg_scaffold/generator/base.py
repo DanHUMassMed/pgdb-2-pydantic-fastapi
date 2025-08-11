@@ -18,15 +18,10 @@ class CodeGenerator(ABC):
         ensure_package_dirs(self.output_dir)
         
         self.schema = self._load_schema_from_dir(sql_json_dir)
-        self.template_dir = os.path.join(os.path.dirname(__file__), "../templates")
+        template_dir = os.path.join(os.path.dirname(__file__), "../templates")
+        self.template_dir = os.path.normpath(template_dir)
         
-        self.env = Environment(
-            loader=FileSystemLoader(self.template_dir),
-            trim_blocks=True,
-            lstrip_blocks=True
-        )
-        
-        self.template = self.env.get_template(template_file_nm)
+        self.template = self._get_template(template_file_nm)
         
 
 
@@ -42,6 +37,16 @@ class CodeGenerator(ABC):
                 
         return metadata
 
+    def _get_template(self, template_file_nm):
+        env = Environment(
+            loader=FileSystemLoader(self.template_dir),
+            trim_blocks=True,
+            lstrip_blocks=True
+        )
+        
+        return env.get_template(template_file_nm)
+        
+        
     @abstractmethod
     def generate(self) -> None:
         """Generate files using the extracted metadata."""

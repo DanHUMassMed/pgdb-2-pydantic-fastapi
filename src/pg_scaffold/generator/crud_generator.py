@@ -4,7 +4,7 @@ import os
 import shutil
 from jinja2 import Environment, FileSystemLoader
 from pg_scaffold.generator.base import CodeGenerator
-from pg_scaffold.generator.utils import snake_to_pascal, map_pg_type_to_python
+from pg_scaffold.generator.utils import snake_to_pascal, map_pg_column_to_python
 
 
 

@@ -3,20 +3,39 @@ from typing import List, Optional
 from datetime import datetime, date
 from uuid import UUID
 
-class {{ class_name }}Create(BaseModel):
+from .base import BaseSchema, BaseCreateSchema, BaseReadSchema, BaseUpdateSchema
+
+class {{ class_name }}Base(BaseSchema):
 {% for column in columns %}
-   {% if not column.primary_key %}
-    {{ column.name }}: {{ map_pg_type_to_python(column, column.nullable) }}
+   {% if not column.primary_key and not column.server_default%}
+    {{ column.name }}: {{ map_pg_column_to_python(column, column.nullable) }}
    {% endif -%}
 {% endfor %}
 
 
-class {{ class_name }}Read(BaseModel):
+class {{ class_name }}Create({{ class_name }}Base, BaseCreateSchema):
 {% for column in columns %}
-    {{ column.name }}: {{ map_pg_type_to_python(column, column.nullable) }}
+   {% if column.primary_key %}
+    {{ column.name }}: {{ map_pg_column_to_python(column, column.nullable) }}
+   {% endif -%}
 {% endfor %}
 
-     # Relationships
+class {{ class_name }}Read({{ class_name }}Base, BaseReadSchema):
+{% for column in columns %}
+   {% if column.primary_key or column.server_default%}
+    {{ column.name }}: {{ map_pg_column_to_python(column, column.nullable) }}
+   {% endif -%}
+{% endfor %}
+
+
+class {{ class_name }}Update({{ class_name }}Base, BaseUpdateSchema):
+{% for column in columns %}
+   {% if not column.primary_key %}
+    {{ column.name }}: {{ map_pg_column_to_python(column, True) }}
+   {% endif -%}   
+{% endfor %}
+
+class {{ class_name }}WithRelations({{ class_name }}Read):
 {% for relationship in relationships %}
    {% if relationship.use_list %}
     {{ relationship.relationship_variable }}: Optional[List["{{relationship.related_model }}Read"]] = None
@@ -24,17 +43,5 @@ class {{ class_name }}Read(BaseModel):
     {{ relationship.relationship_variable }}: Optional["{{relationship.related_model }}Read"] = None
    {% endif -%}
 {% endfor %}
-
-    class Config:
-        from_attributes = True  # Enables ORM model-to-schema conversion
-
-class {{ class_name }}Update(BaseModel):
-{% for column in columns %}
-   {% if not column.primary_key %}
-    {{ column.name }}: {{ map_pg_type_to_python(column, True) }}
-   {% endif -%}   
-{% endfor %}
-
-
 
 

@@ -1,0 +1,19 @@
+{
+	"servers": {
+		"context7-project": {
+			"command": "npx",
+			"args": [
+				"-y",
+				"@upstash/context7-mcp@latest"
+			]
+		},
+		"sequentialthinking-project": {
+			"command": "npx",
+			"args": [
+				"-y",
+				"@modelcontextprotocol/server-sequential-thinking"
+			]
+		}
+	},
+	"inputs": []
+}
