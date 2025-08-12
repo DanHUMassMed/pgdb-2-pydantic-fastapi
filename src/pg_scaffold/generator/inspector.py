@@ -92,25 +92,24 @@ class DatabaseInspector:
             print(f"is one-to-one: {is_one_to_one} for {constrained_col} in {table_name}")
             relationships.append({
                 "relationship_table_name": table_name,
-                "related_file_name": table_name_to_file_name(referred_table),
-                "related_model": table_name_to_class_name(referred_table),
-                "relationship_variable": table_name_to_variable_name(referred_table, use_singular = True),
+                "file_name": table_name_to_file_name(referred_table),
+                "model_name": table_name_to_class_name(referred_table),
+                "variable_name": table_name_to_variable_name(referred_table, use_singular = True),
                 "back_populates": table_name_to_variable_name(table_name, use_singular = is_one_to_one),
-                "use_list": not is_one_to_one,  # False means one-to-one
+                "use_list": False,  # False means one-to-one
                 
                 "referred_table": referred_table,
                 "referred_column": referred_col,
-                "constrained_column": constrained_col,
+                "referred_variable": constrained_col,
                 "relation_type": "foreign_key",  # ← added type info
             })
 
             reverse_relationships.append({
                 "relationship_table_name": referred_table,
-                "relationship_file_name": table_name_to_file_name(referred_table),
-                "related_file_name": table_name_to_file_name(table_name),
-                "related_model": table_name_to_class_name(table_name),
-                "relationship_variable": table_name_to_variable_name(table_name, use_singular=is_one_to_one),
-                "back_populates": table_name_to_variable_name(referred_table, use_singular=True),
+                "file_name": table_name_to_file_name(table_name),
+                "model_name": table_name_to_class_name(table_name),
+                "variable_name": table_name_to_variable_name(table_name, use_singular = is_one_to_one),
+                "back_populates": table_name_to_variable_name(referred_table, use_singular = True),
                 "use_list": not is_one_to_one,  # Reverse is always one-to-many unless overridden manually
                 "relation_type": "reverse",  # ← added type info
             })

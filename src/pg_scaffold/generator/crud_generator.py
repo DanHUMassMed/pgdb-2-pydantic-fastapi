@@ -5,7 +5,7 @@ import shutil
 from jinja2 import Environment, FileSystemLoader
 from pg_scaffold.generator.base import CodeGenerator
 from pg_scaffold.generator.utils import snake_to_pascal, map_pg_column_to_python
-
+from pg_scaffold.preserve_custom.preservation import CodePreservationManager 
 
 
 class CRUDGenerator(CodeGenerator):
@@ -20,7 +20,7 @@ class CRUDGenerator(CodeGenerator):
             
     def generate(self) -> None:
         for table_name, table_info in self.schema.items():
-            
+            print(f"relationships: {table_info.get("relationships",[])}")
             rendered = self.template.render(
                 table_name = table_name,
                 file_name = table_info["file_name"],
@@ -28,6 +28,4 @@ class CRUDGenerator(CodeGenerator):
                 relationships = table_info.get("relationships",[]),
             )
             
-            output_path = os.path.join(self.output_dir, f"{table_info["file_name"]}.py")
-            with open(output_path, "w") as f:
-                f.write(rendered)
+            CodePreservationManager.write_code(rendered, self.output_dir, f"{table_info["file_name"]}.py")

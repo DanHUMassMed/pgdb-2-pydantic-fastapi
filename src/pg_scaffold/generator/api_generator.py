@@ -4,7 +4,7 @@ import os
 
 from pg_scaffold.generator.base import CodeGenerator
 from pg_scaffold.generator.utils import snake_to_pascal, map_pg_column_to_python
-
+from pg_scaffold.preserve_custom.preservation import CodePreservationManager 
 
 class APIGenerator(CodeGenerator):
     
@@ -22,6 +22,5 @@ class APIGenerator(CodeGenerator):
                 file_name = table_info["file_name"],
             )
             
-            output_path = os.path.join(self.output_dir, f"{table_info["file_name"]}.py")
-            with open(output_path, "w") as f:
-                f.write(rendered)
+            CodePreservationManager.write_code(rendered, self.output_dir, f"{table_info["file_name"]}.py")
+            

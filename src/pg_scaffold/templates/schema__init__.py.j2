@@ -1,0 +1,29 @@
+
+{% for model_object in model_objects %}
+from .{{ model_object.file_name }} import (
+      {{ model_object.class_name -}}Base, 
+      {{ model_object.class_name -}}Create, 
+      {{ model_object.class_name -}}Read, 
+      {{ model_object.class_name -}}Update,
+      {% if  model_object.has_relationships %}      {{ model_object.class_name -}}WithRelations {% endif -%} 
+)
+{% endfor %}
+
+
+{% for model_object in model_objects %}
+{{ model_object.class_name }}Read.model_rebuild()
+{% endfor %}
+{% for model_object in model_objects %}
+{{ model_object.class_name }}WithRelations.model_rebuild()
+{% endfor %}
+
+__all__ = [
+{% for model_object in model_objects %}
+    "{{ model_object.class_name -}}Base", 
+    "{{ model_object.class_name -}}Create", 
+    "{{ model_object.class_name -}}Read", 
+    "{{ model_object.class_name -}}Update",
+    {% if  model_object.has_relationships %}    "{{ model_object.class_name }}WithRelations", {% endif %} 
+{% endfor %}
+
+]

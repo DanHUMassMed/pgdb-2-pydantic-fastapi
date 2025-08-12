@@ -44,48 +44,48 @@ VALUES
 (2, 4, TRUE, '2025-08-01', '2025-07-25');
 SELECT setval('judges_id_seq', (SELECT MAX(id) FROM judges));
 
--- Insert judging assignments with overlapping posters
-INSERT INTO judging_assignments (id, judge_id, poster_id, status)
-VALUES 
-(1, 1, 1, 'Assigned'),
-(2, 1, 5, 'Assigned'),
-(3, 1, 7, 'Assigned'),
-(4, 2, 1, 'Assigned'),  -- Same poster as judge 1
-(5, 2, 6, 'Assigned'),
-(6, 2, 7, 'Assigned');  -- Same poster as judge 1
-SELECT setval('judging_assignments_id_seq', (SELECT MAX(id) FROM judging_assignments));
+-- -- Insert judging assignments with overlapping posters
+-- INSERT INTO judging_assignments (id, judge_id, poster_id, status)
+-- VALUES 
+-- (1, 1, 1, 'Assigned'),
+-- (2, 1, 5, 'Assigned'),
+-- (3, 1, 7, 'Assigned'),
+-- (4, 2, 1, 'Assigned'),  -- Same poster as judge 1
+-- (5, 2, 6, 'Assigned'),
+-- (6, 2, 7, 'Assigned');  -- Same poster as judge 1
+-- SELECT setval('judging_assignments_id_seq', (SELECT MAX(id) FROM judging_assignments));
 
--- Insert scoring criteria
-INSERT INTO criteria (name, description, max_score)
-VALUES
-('Scientific Clarity and Rigor', 'Was the scientific question clear and was the methodology appropriate and rigorous?', 5),
-('Data Presentation and Interpretation', 'Were the results clearly presented and convincingly interpreted?', 5),
-('Visual Design and Organization', 'Was the poster visually clear, well-organized, and easy to follow?', 5),
-('Impact and Innovation', 'Did the poster present novel insights or potential impact for the field?', 5),
-('Tiebreaker', 'Was there something special about the poster/presenter we could consider in case of a tie?', 5);
+-- -- Insert scoring criteria
+-- INSERT INTO criteria (name, description, max_score)
+-- VALUES
+-- ('Scientific Clarity and Rigor', 'Was the scientific question clear and was the methodology appropriate and rigorous?', 5),
+-- ('Data Presentation and Interpretation', 'Were the results clearly presented and convincingly interpreted?', 5),
+-- ('Visual Design and Organization', 'Was the poster visually clear, well-organized, and easy to follow?', 5),
+-- ('Impact and Innovation', 'Did the poster present novel insights or potential impact for the field?', 5),
+-- ('Tiebreaker', 'Was there something special about the poster/presenter we could consider in case of a tie?', 5);
 
--- Insert scores and score_criteria for Poster 1
-INSERT INTO scores (assignment_id, comment)
-VALUES (1, 'Strong work and great clarity throughout');
-VALUES (3, 'Good presentation, but some methods were unclear');
+-- -- Insert scores and score_criteria for Poster 1
+-- INSERT INTO scores (assignment_id, comment)
+-- VALUES (1, 'Strong work and great clarity throughout');
+-- VALUES (3, 'Good presentation, but some methods were unclear');
 
--- Insert scores and score_criteria for judges 1 on Poster 1
-INSERT INTO score_criteria (score_id, criterion_id, score_value)
-VALUES 
-(1, 1, 5),
-(1, 2, 4),
-(1, 3, 4),
-(1, 4, 5),
-(1, 5, 3);
+-- -- Insert scores and score_criteria for judges 1 on Poster 1
+-- INSERT INTO score_criteria (score_id, criterion_id, score_value)
+-- VALUES 
+-- (1, 1, 5),
+-- (1, 2, 4),
+-- (1, 3, 4),
+-- (1, 4, 5),
+-- (1, 5, 3);
 
--- Insert scores and score_criteria for judges 2 on Poster 1
-INSERT INTO scores (assignment_id, comment)
-VALUES (3, 'Innovative approach, but data section was hard to follow');
+-- -- Insert scores and score_criteria for judges 2 on Poster 1
+-- INSERT INTO scores (assignment_id, comment)
+-- VALUES (3, 'Innovative approach, but data section was hard to follow');
 
-INSERT INTO score_criteria (score_id, criterion_id, score_value)
-VALUES 
-(2, 1, 4),
-(2, 2, 3),
-(2, 3, 5),
-(2, 4, 5),
-(2, 5, 4);
+-- INSERT INTO score_criteria (score_id, criterion_id, score_value)
+-- VALUES 
+-- (2, 1, 4),
+-- (2, 2, 3),
+-- (2, 3, 5),
+-- (2, 4, 5),
+-- (2, 5, 4);

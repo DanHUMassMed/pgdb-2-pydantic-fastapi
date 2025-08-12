@@ -5,6 +5,7 @@ import shutil
 from pg_scaffold.generator.base import CodeGenerator
 
 from pg_scaffold.generator.utils import map_pg_type_to_sqlalchemy_type, map_pg_column_to_sqlalchemy
+from pg_scaffold.preserve_custom.preservation import CodePreservationManager 
 
 class ModelGenerator(CodeGenerator):
     
@@ -27,7 +28,7 @@ class ModelGenerator(CodeGenerator):
         
         for fk in foreign_key_relationships:
             reference = f"{fk['referred_table']}.{fk['referred_column']}"
-            foreign_keys_dict[fk["constrained_column"]] = f"ForeignKey('{reference}')" # type: ignore
+            foreign_keys_dict[fk["referred_variable"]] = f"ForeignKey('{reference}')" # type: ignore
             
         self.foreign_keys_dict = foreign_keys_dict
         return foreign_keys_dict
@@ -36,8 +37,8 @@ class ModelGenerator(CodeGenerator):
         """Return the ForeignKey string for a given column name."""
         foreign_key = self.foreign_keys_dict.get(column_name)
         if foreign_key:
-            return f"{foreign_key},"
-        return ""
+            return f" {foreign_key},"
+        return " "
 
     def generate_init(self) -> None:
         template = self._get_template("model__init__.py.j2")
@@ -66,6 +67,5 @@ class ModelGenerator(CodeGenerator):
                 get_foreign_key_for_column = self._get_foreign_key_for_column
             )
 
-            output_path = os.path.join(self.output_dir, f"{table_info["file_name"]}.py")
-            with open(output_path, "w") as f:
-                f.write(rendered)
+
+            CodePreservationManager.write_code(rendered, self.output_dir, f"{table_info["file_name"]}.py")            

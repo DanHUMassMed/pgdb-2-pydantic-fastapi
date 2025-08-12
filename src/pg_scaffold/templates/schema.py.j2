@@ -38,9 +38,9 @@ class {{ class_name }}Update({{ class_name }}Base, BaseUpdateSchema):
 class {{ class_name }}WithRelations({{ class_name }}Read):
 {% for relationship in relationships %}
    {% if relationship.use_list %}
-    {{ relationship.relationship_variable }}: Optional[List["{{relationship.related_model }}Read"]] = None
+    {{ relationship.variable_name }}: Optional[List["{{relationship.model_name }}Read"]] = None
    {% else %}
-    {{ relationship.relationship_variable }}: Optional["{{relationship.related_model }}Read"] = None
+    {{ relationship.variable_name }}: Optional["{{relationship.model_name }}Read"] = None
    {% endif -%}
 {% endfor %}
 

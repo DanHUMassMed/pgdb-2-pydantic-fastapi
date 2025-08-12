@@ -40,36 +40,36 @@ CREATE TABLE posters (
     judging_session TEXT
 );
 
--- Judging Assignments
-CREATE TABLE judging_assignments (
-    id SERIAL PRIMARY KEY,
-    judge_id INT NOT NULL REFERENCES judges(id) ON DELETE CASCADE,
-    poster_id INT NOT NULL REFERENCES posters(id) ON DELETE CASCADE,
-    assigned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    status TEXT CHECK (status IN ('Conflict', 'Assigned', 'Completed', 'Skipped')) DEFAULT 'Assigned',
-    UNIQUE(judge_id, poster_id)
-);
+-- -- Judging Assignments
+-- CREATE TABLE judging_assignments (
+--     id SERIAL PRIMARY KEY,
+--     judge_id INT NOT NULL REFERENCES judges(id) ON DELETE CASCADE,
+--     poster_id INT NOT NULL REFERENCES posters(id) ON DELETE CASCADE,
+--     assigned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--     status TEXT CHECK (status IN ('Conflict', 'Assigned', 'Completed', 'Skipped')) DEFAULT 'Assigned',
+--     UNIQUE(judge_id, poster_id)
+-- );
 
--- Scoring Criteria
-CREATE TABLE criteria (
-    id SERIAL PRIMARY KEY,
-    name TEXT NOT NULL,
-    description TEXT,
-    max_score INT NOT NULL DEFAULT 5
-);
+-- -- Scoring Criteria
+-- CREATE TABLE criteria (
+--     id SERIAL PRIMARY KEY,
+--     name TEXT NOT NULL,
+--     description TEXT,
+--     max_score INT NOT NULL DEFAULT 5
+-- );
 
--- Scores: Represents a judge scoring a poster (includes comment or optional summary)
-CREATE TABLE scores (
-    id SERIAL PRIMARY KEY,
-    assignment_id INT NOT NULL REFERENCES judging_assignments(id) ON DELETE CASCADE,
-    comment TEXT
-);
+-- -- Scores: Represents a judge scoring a poster (includes comment or optional summary)
+-- CREATE TABLE scores (
+--     id SERIAL PRIMARY KEY,
+--     assignment_id INT NOT NULL REFERENCES judging_assignments(id) ON DELETE CASCADE,
+--     comment TEXT
+-- );
 
--- Score Criteria: Individual criterion scores tied to a score "event"
-CREATE TABLE score_criteria (
-    id SERIAL PRIMARY KEY,
-    score_id INT NOT NULL REFERENCES scores(id) ON DELETE CASCADE,
-    criterion_id INT NOT NULL REFERENCES criteria(id) ON DELETE CASCADE,
-    score_value INT CHECK (score_value >= 0 AND score_value <= 5),
-    UNIQUE(score_id, criterion_id)
-);
+-- -- Score Criteria: Individual criterion scores tied to a score "event"
+-- CREATE TABLE score_criteria (
+--     id SERIAL PRIMARY KEY,
+--     score_id INT NOT NULL REFERENCES scores(id) ON DELETE CASCADE,
+--     criterion_id INT NOT NULL REFERENCES criteria(id) ON DELETE CASCADE,
+--     score_value INT CHECK (score_value >= 0 AND score_value <= 5),
+--     UNIQUE(score_id, criterion_id)
+-- );

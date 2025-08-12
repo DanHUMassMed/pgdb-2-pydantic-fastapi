@@ -10,21 +10,23 @@ class CRUD{{ class_name }}(CRUDBase[{{ class_name }}, {{ class_name }}Create, {{
     def _apply_get_hook(self, query: Query) -> Query:
         return query.options(
             {% for relationship in relationships %}
-            joinedload({{ class_name }}.{{ relationship.relationship_variable }}),
+            {% if relationship.relation_type =="foreign_key" %}
+            joinedload({{ class_name }}.{{ relationship.variable_name }}),
+            {% endif -%}
             {% endfor %}
         )
 
     def _apply_multi_hook(self, query: Query) -> Query:
         return query.options(
             {% for relationship in relationships %}
-            joinedload({{ class_name }}.{{ relationship.relationship_variable }}),
+            joinedload({{ class_name }}.{{ relationship.variable_name }}),
             {% endfor %}
         )
 
     def _apply_filter_hook(self, query: Query) -> Query:
         return query.options(
             {% for relationship in relationships %}
-            joinedload({{ class_name }}.{{ relationship.relationship_variable }}),
+            joinedload({{ class_name }}.{{ relationship.variable_name }}),
             {% endfor %}
         )
 

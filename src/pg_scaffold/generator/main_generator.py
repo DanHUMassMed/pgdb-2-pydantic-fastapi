@@ -5,6 +5,7 @@ import shutil
 from pg_scaffold.generator.base import CodeGenerator
 from pg_scaffold.generator.utils import snake_to_pascal, map_pg_column_to_python
 from pg_scaffold.generator.utils import ensure_package_dirs
+from pg_scaffold.preserve_custom.preservation import CodePreservationManager 
 
 class MainGenerator(CodeGenerator):
     
@@ -23,6 +24,4 @@ class MainGenerator(CodeGenerator):
             file_names = file_names
         )
         
-        output_path = os.path.join(self.output_dir, "main.py")
-        with open(output_path, "w") as f:
-            f.write(rendered)
+        CodePreservationManager.write_code(rendered, self.output_dir, "main.py")            

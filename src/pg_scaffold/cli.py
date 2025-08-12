@@ -10,6 +10,7 @@ from pg_scaffold.generator.schema_generator import SchemaGenerator
 from pg_scaffold.generator.crud_generator import CRUDGenerator
 from pg_scaffold.generator.api_generator import APIGenerator
 from pg_scaffold.generator.main_generator import MainGenerator
+from pg_scaffold.preserve_custom.preservation import CodePreservationManager
 
 class FriendlyArgumentParser(argparse.ArgumentParser):
     def error(self, message):
@@ -36,6 +37,9 @@ def main():
         inspector = DatabaseInspector(args.pgdb, args.output_dir)
         inspector.generate_scheme_json()
     
+    manager = CodePreservationManager(args.output_dir)
+    preserved_code = manager.preserve_custom_code()
+    
     # Step 2: Generate models
     model_generator = ModelGenerator(args.sql_json_dir, args.output_dir)
     model_generator.generate()
@@ -55,6 +59,9 @@ def main():
     # Step 6: Generate main application file    
     main_generator = MainGenerator(args.sql_json_dir, args.output_dir)
     main_generator.generate()
+    
+    manager.set_target_directory(args.output_dir)
+    manager.restore_custom_code(preserved_code)
     
 if __name__ == "__main__":
     main()
