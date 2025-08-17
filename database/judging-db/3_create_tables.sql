@@ -40,15 +40,15 @@ CREATE TABLE posters (
     judging_session TEXT
 );
 
--- -- Judging Assignments
--- CREATE TABLE judging_assignments (
---     id SERIAL PRIMARY KEY,
---     judge_id INT NOT NULL REFERENCES judges(id) ON DELETE CASCADE,
---     poster_id INT NOT NULL REFERENCES posters(id) ON DELETE CASCADE,
---     assigned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
---     status TEXT CHECK (status IN ('Conflict', 'Assigned', 'Completed', 'Skipped')) DEFAULT 'Assigned',
---     UNIQUE(judge_id, poster_id)
--- );
+-- Judging Assignments
+CREATE TABLE judging_assignments (
+    id SERIAL PRIMARY KEY,
+    judge_id INT NOT NULL REFERENCES judges(id) ON DELETE CASCADE,
+    poster_id INT NOT NULL REFERENCES posters(id) ON DELETE CASCADE,
+    assigned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    status TEXT CHECK (status IN ('Conflict', 'Assigned', 'Completed', 'Skipped')) DEFAULT 'Assigned',
+    UNIQUE(judge_id, poster_id)
+);
 
 -- -- Scoring Criteria
 -- CREATE TABLE criteria (

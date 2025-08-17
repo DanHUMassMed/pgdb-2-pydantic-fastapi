@@ -44,16 +44,16 @@ VALUES
 (2, 4, TRUE, '2025-08-01', '2025-07-25');
 SELECT setval('judges_id_seq', (SELECT MAX(id) FROM judges));
 
--- -- Insert judging assignments with overlapping posters
--- INSERT INTO judging_assignments (id, judge_id, poster_id, status)
--- VALUES 
--- (1, 1, 1, 'Assigned'),
--- (2, 1, 5, 'Assigned'),
--- (3, 1, 7, 'Assigned'),
--- (4, 2, 1, 'Assigned'),  -- Same poster as judge 1
--- (5, 2, 6, 'Assigned'),
--- (6, 2, 7, 'Assigned');  -- Same poster as judge 1
--- SELECT setval('judging_assignments_id_seq', (SELECT MAX(id) FROM judging_assignments));
+-- Insert judging assignments with overlapping posters
+INSERT INTO judging_assignments (id, judge_id, poster_id, status)
+VALUES 
+(1, 1, 1, 'Assigned'),
+(2, 1, 5, 'Assigned'),
+(3, 1, 7, 'Assigned'),
+(4, 2, 1, 'Assigned'),  -- Same poster as judge 1
+(5, 2, 6, 'Assigned'),
+(6, 2, 7, 'Assigned');  -- Same poster as judge 1
+SELECT setval('judging_assignments_id_seq', (SELECT MAX(id) FROM judging_assignments));
 
 -- -- Insert scoring criteria
 -- INSERT INTO criteria (name, description, max_score)

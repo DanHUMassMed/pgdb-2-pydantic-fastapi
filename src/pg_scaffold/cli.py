@@ -28,6 +28,8 @@ def main():
 
     args = parser.parse_args()
 
+    app_dir = os.path.join(args.output_dir, "app")
+
     # Set default for sql_json_dir if not provided
     if args.sql_json_dir is None:
         args.sql_json_dir = os.path.join(args.output_dir, "schema_json")
@@ -37,30 +39,30 @@ def main():
         inspector = DatabaseInspector(args.pgdb, args.output_dir)
         inspector.generate_scheme_json()
     
-    manager = CodePreservationManager(args.output_dir)
+    manager = CodePreservationManager(app_dir)
     preserved_code = manager.preserve_custom_code()
     
     # Step 2: Generate models
-    model_generator = ModelGenerator(args.sql_json_dir, args.output_dir)
+    model_generator = ModelGenerator(args.sql_json_dir, app_dir)
     model_generator.generate()
 
     # Step 3: Generate schemas
-    schema_generator = SchemaGenerator(args.sql_json_dir, args.output_dir)
+    schema_generator = SchemaGenerator(args.sql_json_dir, app_dir)
     schema_generator.generate()
     
     # Step 4: Generate CRUD operations
-    crud_generator = CRUDGenerator(args.sql_json_dir, args.output_dir)
+    crud_generator = CRUDGenerator(args.sql_json_dir, app_dir)
     crud_generator.generate()  
 
     # Step 5: Generate API endpoints    
-    api_generator = APIGenerator(args.sql_json_dir, args.output_dir)
+    api_generator = APIGenerator(args.sql_json_dir, app_dir)
     api_generator.generate()
 
     # Step 6: Generate main application file    
-    main_generator = MainGenerator(args.sql_json_dir, args.output_dir)
+    main_generator = MainGenerator(args.sql_json_dir, app_dir)
     main_generator.generate()
     
-    manager.set_target_directory(args.output_dir)
+    manager.set_target_directory(app_dir)
     manager.restore_custom_code(preserved_code)
     
 if __name__ == "__main__":

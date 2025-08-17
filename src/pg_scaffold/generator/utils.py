@@ -102,23 +102,26 @@ def map_pg_column_to_python(pg_col: dict, optional:bool = False) -> str:
     return  f"Optional[{data_type}] = None" if optional or server_default else data_type
 
 
-def ensure_package_dirs(path: str):
+import os
+
+def ensure_package_dirs(path: str, stop_at: str):
     """
-    Ensures that `path` and all parent directories up to the first
-    directory in the relative path contain an __init__.py file.
+    Ensures that `path` and all parent directories up to (and including)
+    the directory named `stop_at` contain an __init__.py file.
+
+    Parameters
+    ----------
+    path : str
+        Relative path to a package directory (e.g., "App/models/schema").
+    stop_at : str
+        Directory name at which to stop ensuring __init__.py files
+        (e.g., "App").
     """
     if os.path.isabs(path):
         raise ValueError(f"`path` must be relative, got absolute path: {path}")
 
     # Normalize path to remove trailing slashes, resolve '.' or '..'
     path = os.path.normpath(path)
-
-    # Extract the first part of the path — the top-level directory
-    parts = path.split(os.sep)
-    if len(parts) == 1:
-        stop_at = path  # e.g., just "app"
-    else:
-        stop_at = parts[0]  # e.g., "app" from "app/models/schema"
 
     # Ensure full target directory exists
     os.makedirs(path, exist_ok=True)
@@ -132,11 +135,12 @@ def ensure_package_dirs(path: str):
             with open(init_path, "a"):
                 os.utime(init_path, None)
 
-        if current == stop_at:
+        # Stop when we've reached the stop_at directory
+        if os.path.basename(current) == stop_at:
             break
 
         parent = os.path.dirname(current)
         if parent == current:
-            break  # reached '.'
+            break  # reached filesystem root without finding stop_at
 
         current = parent

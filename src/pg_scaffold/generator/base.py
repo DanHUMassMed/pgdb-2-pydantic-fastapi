@@ -15,7 +15,7 @@ class CodeGenerator(ABC):
         self.sql_json_dir = sql_json_dir
         self.output_dir = output_dir
         print(f"Output directory: {self.output_dir}")
-        ensure_package_dirs(self.output_dir)
+        ensure_package_dirs(self.output_dir, stop_at='app')
         
         self.schema = self._load_schema_from_dir(sql_json_dir)
         template_dir = os.path.join(os.path.dirname(__file__), "../templates")
