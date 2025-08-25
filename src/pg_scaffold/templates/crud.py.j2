@@ -1,11 +1,11 @@
 from sqlalchemy.orm import Query, joinedload
 from app.crud.base import CRUDBase
-from app.models.{{ file_name }} import {{ class_name }}
+from app.models.{{ file_name }} import {{ class_name }}Model
 from app.schemas.{{ file_name }} import {{ class_name }}Create, {{ class_name }}Update
 
 
 
-class CRUD{{ class_name }}(CRUDBase[{{ class_name }}, {{ class_name }}Create, {{ class_name }}Update]):
+class CRUD{{ class_name }}(CRUDBase[{{ class_name }}Model, {{ class_name }}Create, {{ class_name }}Update]):
     """Support simple Create Read Update and Delete (CRUD)"""
     #-- Preserve Custom code START --#
     #-- Preserve Custom code END   --#
@@ -38,6 +38,6 @@ class CRUD{{ class_name }}(CRUDBase[{{ class_name }}, {{ class_name }}Create, {{
 
 {% endif -%} 
 
-crud = CRUD{{ class_name }}({{ class_name }})
+crud = CRUD{{ class_name }}({{ class_name }}Model)
 
 

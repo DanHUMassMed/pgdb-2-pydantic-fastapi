@@ -8,9 +8,9 @@ CREATE TABLE users (
     organization VARCHAR(128), 
     is_verified BOOLEAN DEFAULT FALSE NOT NULL, -- email verified
     magic_link_token VARCHAR(128), -- same
-    magic_link_expires_at TIMESTAMP, -- expiry for magic link
+    magic_link_expires_at VARCHAR(64), -- expiry for magic link
     registered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    last_login_at TIMESTAMP,
+    last_login_at VARCHAR(64),
     role VARCHAR(20) DEFAULT 'user' CHECK (role IN ('user', 'admin')) NOT NULL
 );
 

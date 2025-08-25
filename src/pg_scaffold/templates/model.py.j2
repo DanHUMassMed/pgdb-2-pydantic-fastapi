@@ -14,7 +14,7 @@ from app.models.base import Base
     from app.models.{{ relationship.file_name }} import {{relationship.model_name }}
  {% endfor %}
 
-class {{ class_name }}(Base):
+class {{ class_name }}Model(Base):
     __tablename__ = '{{ table_name }}'
 
 {% for column in columns %}
@@ -23,7 +23,7 @@ class {{ class_name }}(Base):
                                  {% if column.primary_key -%} primary_key=True, {% endif -%}
                                  {% if column.index -%} index=True, {% endif -%}
                                  {% if column.unique -%} unique=True, {% endif -%}
-                                 {% if column.server_default -%} server_default={{ column.server_default_value -}}, {% endif -%}
+                                 {% if not column.primary_key and column.server_default -%} server_default={{ column.server_default_value -}}, {% endif -%}
                                  {% if column.nullable -%}nullable=True {% else %} nullable=False{% endif -%})
 {% endfor %}
 
