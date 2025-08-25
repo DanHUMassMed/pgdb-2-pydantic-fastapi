@@ -3,13 +3,13 @@ from __future__ import annotations
 from datetime import datetime, date
 from typing import TYPE_CHECKING
 
-from sqlalchemy import String, Integer, Float, Boolean, Date, TIMESTAMP, UUID, ForeignKey 
+from sqlalchemy import String, Integer, Float, Boolean, Date, TIMESTAMP, UUID, ForeignKey, func, text
 
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base
 
-if TYPE_CHECKING:
+{% if relationships %}if TYPE_CHECKING: {% endif -%}
  {% for relationship in relationships %}
     from app.models.{{ relationship.file_name }} import {{relationship.model_name }}
  {% endfor %}
@@ -23,7 +23,8 @@ class {{ class_name }}(Base):
                                  {% if column.primary_key -%} primary_key=True, {% endif -%}
                                  {% if column.index -%} index=True, {% endif -%}
                                  {% if column.unique -%} unique=True, {% endif -%}
-                                 {% if column.nullable is not none and not column.nullable -%} nullable=False{% endif -%})
+                                 {% if column.server_default -%} server_default={{ column.server_default_value -}}, {% endif -%}
+                                 {% if column.nullable -%}nullable=True {% else %} nullable=False{% endif -%})
 {% endfor %}
 
      # Relationships

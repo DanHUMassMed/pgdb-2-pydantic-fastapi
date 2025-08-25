@@ -1,6 +1,8 @@
 import logging
 import os
 import json
+import re
+import datetime
 import sqlalchemy as sa
 from sqlalchemy import create_engine, inspect
 from sqlalchemy.engine import Engine
@@ -38,7 +40,54 @@ class DatabaseInspector:
                                        "relationships": []
                                        } # type: ignore
             
+
+    def _parse_default_value(self, raw_default):
+        if raw_default is None:
+            return None
+
+        # --- Step 1: cleanup Postgres formatting ---
+        val = raw_default.strip("()")  # remove outer ()
+        val = re.sub(r"::[\w\s]+$", "", val.strip())  # strip ::typename casts
+
+        # --- Step 2: strip surrounding quotes ---
+        if (val.startswith("'") and val.endswith("'")) or (val.startswith('"') and val.endswith('"')):
+            val = val[1:-1]
+
+        # --- Step 3: normalize common values ---
+        # Boolean
+        if val.lower() in ("true", "t", "1"):
+            return f"text(\"true\")"
+        if val.lower() in ("false", "f", "0"):
+            return f"text(\"false\")"
+
+        # Null
+        if val.lower() == "null":
+            return None
+
+        # Integer
+        if re.fullmatch(r"-?\d+", val):
+            return f"text(\"{int(val)}\")"
             
+        # Float
+        if re.fullmatch(r"-?\d+\.\d+", val):
+            return f"text(\"{float(val)}\")"
+
+
+        # Date/Time functions
+        if val.lower() in ("now()", "current_timestamp", "current_timestamp()"):
+            return "func.now()"
+        if val.lower() in ("current_date", "current_date()"):
+            return "datetime.date.today"
+        if val.lower() in ("current_time", "current_time()"):
+            return "datetime.datetime.now().time"
+
+        # Sequences (Postgres SERIAL / IDENTITY)
+        if val.lower().startswith("nextval("):
+            return "<auto-increment sequence>"
+
+        # --- Default: return cleaned raw string ---
+        return f"text(\"'{val}'\")"
+           
     def _columns_for_table(self, table_name: str):
         columns = []
         pk_constraint = self.inspector.get_pk_constraint(table_name)
@@ -49,12 +98,16 @@ class DatabaseInspector:
         unique_columns = [col for index in indexes if index.get("unique") for col in index.get("column_names", [])]
 
         for column_name in self.inspector.get_columns(table_name):
-            #print(f"Inspecting column: {column_name}")
+            print(f"Inspecting column: {column_name}")
+            raw_default = column_name.get("default")
+            python_default = self._parse_default_value(raw_default)
             columns.append({
                 "name": column_name["name"],
-                "type": str(column_name["type"]),
+                "type": str(column_name["type"]).split("(", 1)[0],
+                "var_len":getattr(column_name["type"], "length", None),
                 "nullable": column_name["nullable"],
                 "server_default": True if column_name["default"] is not None else False,
+                "server_default_value": python_default,
                 "index": column_name["name"] in index_columns,
                 "unique": column_name["name"] in unique_columns,
                 "primary_key": column_name["name"] in primary_keys,

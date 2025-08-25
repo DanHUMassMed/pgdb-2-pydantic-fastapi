@@ -1,2 +1,3 @@
 inflect
 qrcode[pil]
+passlib[argon2]

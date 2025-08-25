@@ -3,7 +3,7 @@ import os
 import sys
 
 import json
-
+import shutil
 from pg_scaffold.generator.inspector import DatabaseInspector
 from pg_scaffold.generator.model_generator import ModelGenerator
 from pg_scaffold.generator.schema_generator import SchemaGenerator
@@ -11,6 +11,7 @@ from pg_scaffold.generator.crud_generator import CRUDGenerator
 from pg_scaffold.generator.api_generator import APIGenerator
 from pg_scaffold.generator.main_generator import MainGenerator
 from pg_scaffold.preserve_custom.preservation import CodePreservationManager
+from pg_scaffold.generator.utils import get_templates_dir
 
 class FriendlyArgumentParser(argparse.ArgumentParser):
     def error(self, message):
@@ -61,6 +62,14 @@ def main():
     # Step 6: Generate main application file    
     main_generator = MainGenerator(args.sql_json_dir, app_dir)
     main_generator.generate()
+    
+    src = os.path.join(get_templates_dir(), "run_app.sh")
+    dst = os.path.join(args.output_dir, "run_app.sh")
+    shutil.copy(src, dst)
+    src = os.path.join(get_templates_dir(), "env")
+    dst = os.path.join(args.output_dir, ".env")
+    if not os.path.exists(dst):
+        shutil.copy(src, dst)
     
     manager.set_target_directory(app_dir)
     manager.restore_custom_code(preserved_code)

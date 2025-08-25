@@ -134,10 +134,10 @@ class CodePreservationManager:
             new_content = self._insert_custom_code(content, preserved.custom_code)
             
             if new_content != content:
-                # Create backup
-                backup_path = file_path.with_suffix('.py.backup')
-                with open(backup_path, 'w', encoding='utf-8') as f:
-                    f.write(content)
+                # # Create backup
+                # backup_path = file_path.with_suffix('.py.backup')
+                # with open(backup_path, 'w', encoding='utf-8') as f:
+                #     f.write(content)
                 
                 # Write updated content
                 with open(file_path, 'w', encoding='utf-8') as f:

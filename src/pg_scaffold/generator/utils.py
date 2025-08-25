@@ -64,9 +64,9 @@ def map_pg_type_to_sqlalchemy_type(pg_type: str) -> str:
 def map_pg_column_to_sqlalchemy(pg_col: dict, optional:bool = False) -> str:
     """Map PostgreSQL type to SQLAlchemy type."""
     pg_type = pg_col.get("type", "TEXT")
-    server_default = pg_col.get("server_default", False)
+    nullable = pg_col.get("nullable", False)
     primary_key = pg_col.get("primary_key", False)
-    optional = optional or server_default
+    optional = optional or nullable
     optional = optional and not primary_key
     mapping = {
         "INTEGER": "int",
@@ -86,7 +86,10 @@ def map_pg_column_to_sqlalchemy(pg_col: dict, optional:bool = False) -> str:
 def map_pg_column_to_python(pg_col: dict, optional:bool = False) -> str:
     """Map PostgreSQL type to python type."""
     pg_type = pg_col.get("type", "TEXT")
-    server_default = pg_col.get("server_default", False)
+    nullable = pg_col.get("nullable", False)
+    primary_key = pg_col.get("primary_key", False)
+    optional = optional or nullable
+    optional = optional or primary_key
     mapping = {
         "INTEGER": "int",
         "TEXT": "str",
@@ -99,10 +102,8 @@ def map_pg_column_to_python(pg_col: dict, optional:bool = False) -> str:
     }
     data_type = mapping.get(pg_type.upper(), "str")  # default fallback
     
-    return  f"Optional[{data_type}] = None" if optional or server_default else data_type
+    return  f"Optional[{data_type}] = None" if optional else data_type
 
-
-import os
 
 def ensure_package_dirs(path: str, stop_at: str):
     """
@@ -144,3 +145,7 @@ def ensure_package_dirs(path: str, stop_at: str):
             break  # reached filesystem root without finding stop_at
 
         current = parent
+        
+def get_templates_dir():        
+    templates_dir = os.path.join(os.path.dirname(__file__), "../templates")
+    return os.path.normpath(templates_dir)

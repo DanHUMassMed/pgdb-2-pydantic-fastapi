@@ -12,9 +12,7 @@ from .{{ model_object.file_name }} import (
 
 {% for model_object in model_objects %}
 {{ model_object.class_name }}Read.model_rebuild()
-{% endfor %}
-{% for model_object in model_objects %}
-{{ model_object.class_name }}WithRelations.model_rebuild()
+{% if  model_object.has_relationships %}    {{ model_object.class_name }}WithRelations.model_rebuild() {% endif %} 
 {% endfor %}
 
 __all__ = [

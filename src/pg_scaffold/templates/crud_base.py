@@ -13,6 +13,9 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     def __init__(self, model: Type[ModelType]):
         self.model = model
 
+    def _create_validation_hook(self):
+        return True
+    
     # Hook methods — override in subclass if needed
     def _apply_get_hook(self, query: Query) -> Query:
         return query
@@ -53,12 +56,15 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         query = self._apply_multi_hook(query)
         return query.offset(skip).limit(limit).all()
 
-    def create(self, db: Session, *, obj_in: CreateSchemaType) -> ModelType:
-        obj_in_data = jsonable_encoder(obj_in)
-        db_obj = self.model(**obj_in_data)
-        db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
+    def create(self, db: Session, *, obj_in: CreateSchemaType) -> Optional[ModelType]:
+        db_obj = None
+        valid_input = self._create_validation_hook()
+        if valid_input:
+            obj_in_data = jsonable_encoder(obj_in)
+            db_obj = self.model(**obj_in_data)
+            db.add(db_obj)
+            db.commit()
+            db.refresh(db_obj)
         return db_obj
 
     def update(
