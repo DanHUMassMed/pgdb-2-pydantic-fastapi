@@ -43,10 +43,11 @@ def main():
     parser.add_argument("--pgdb", required=False, help="PostgreSQL connection string (e.g., postgresql://user:pass@localhost/db)")
     parser.add_argument("--output_dir", required=True, help="Output directory to save the generated FastAPI app")
     parser.add_argument("--sql_json_dir", required=False, help="Input directory containing SQL JSON files to use for model generation")
-    parser.add_argument("--version", required=False, default="v1", help="Generator version to use (e.g., v1, v2)")
+    parser.add_argument("--version", required=False, default="v2", help="Generator version to use (e.g., v1, v2)")
 
     args = parser.parse_args()
 
+    print(f"=== Running code generation with:\n\tDB:{args.pgdb}\n\tOutput Dir:{args.output_dir}\n\tVersion:{args.version}")
     app_dir = os.path.join(args.output_dir, "app")
 
     if args.sql_json_dir is None:

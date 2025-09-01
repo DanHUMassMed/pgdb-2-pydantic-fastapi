@@ -10,7 +10,7 @@ class APIGenerator(CodeGenerator):
     
     def __init__(self, sql_json_dir: str, output_dir: str, gen_version: str):
         output_dir = os.path.join(output_dir, "api")
-        super().__init__(sql_json_dir, output_dir, "api.py.j2")        
+        super().__init__(sql_json_dir, output_dir, "api.py.j2",gen_version)        
 
             
     def generate(self) -> None:

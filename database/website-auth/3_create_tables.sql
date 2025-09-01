@@ -14,7 +14,10 @@ CREATE TABLE users (
     role VARCHAR(20) DEFAULT 'user' CHECK (role IN ('user', 'admin')) NOT NULL
 );
 
--- Events
+-- 1. Create the sequence first
+CREATE SEQUENCE sort_pos_seq;
+
+-- 2. Create the table (sequence already exists, so DEFAULT works fine)
 CREATE TABLE events (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE, -- links event to user
@@ -24,22 +27,10 @@ CREATE TABLE events (
     end_date_time TIMESTAMPTZ NOT NULL,
     location VARCHAR(128),
     affiliation VARCHAR(128),
-    sort_pos INT,
+    sort_pos INT DEFAULT nextval('sort_pos_seq') NOT NULL,
     logo_path VARCHAR(256),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
--- Create a trigger function to set sort_pos on insert
-CREATE OR REPLACE FUNCTION set_sort_pos()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.sort_pos := NEW.id;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
--- Attach the trigger to the events table
-CREATE TRIGGER trg_set_sort_pos
-BEFORE INSERT ON events
-FOR EACH ROW
-EXECUTE FUNCTION set_sort_pos();
+-- 3. Attach the sequence ownership to the column
+ALTER SEQUENCE sort_pos_seq OWNED BY events.sort_pos;

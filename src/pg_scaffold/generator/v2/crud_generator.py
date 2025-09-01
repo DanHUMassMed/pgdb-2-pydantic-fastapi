@@ -12,7 +12,7 @@ class CRUDGenerator(CodeGenerator):
     
     def __init__(self, sql_json_dir: str, output_dir: str, gen_version: str):
         output_dir = os.path.join(output_dir, "crud")
-        super().__init__(sql_json_dir, output_dir, "crud.py.j2")
+        super().__init__(sql_json_dir, output_dir, "crud.py.j2",gen_version)
         src = os.path.join(self.template_dir, "crud_base.py")
         dst = os.path.join(output_dir, "base.py")
         shutil.copyfile(src, dst)

@@ -83,7 +83,7 @@ class DatabaseInspector:
 
         # Sequences (Postgres SERIAL / IDENTITY)
         if val.lower().startswith("nextval("):
-            return "<auto-increment sequence>"
+            return f"text(\"{val})\")"
 
         # --- Default: return cleaned raw string ---
         return f"text(\"'{val}'\")"

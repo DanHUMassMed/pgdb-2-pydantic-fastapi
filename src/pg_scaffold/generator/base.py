@@ -11,7 +11,7 @@ from pg_scaffold.generator.utils import ensure_package_dirs
 class CodeGenerator(ABC):
     """Abstract base class for code generators."""
 
-    def __init__(self, sql_json_dir: Any, output_dir: str, template_file_nm: str, gen_version: str = "v1"):
+    def __init__(self, sql_json_dir: Any, output_dir: str, template_file_nm: str, gen_version: str):
         self.sql_json_dir = sql_json_dir
         self.output_dir = output_dir
         print(f"Output directory: {self.output_dir}")

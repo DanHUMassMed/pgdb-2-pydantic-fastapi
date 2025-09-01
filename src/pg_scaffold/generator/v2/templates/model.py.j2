@@ -1,18 +1,12 @@
 from __future__ import annotations
 
 from datetime import datetime, date
-from typing import TYPE_CHECKING
 
 from sqlalchemy import String, Integer, Float, Boolean, Date, DateTime, TIMESTAMP, UUID, ForeignKey, func, text
 
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base import Base
-
-{% if relationships %}if TYPE_CHECKING: {% endif -%}
- {% for relationship in relationships %}
-    from app.models.{{ relationship.file_name }} import {{relationship.model_name }}
- {% endfor %}
 
 class {{ class_name }}Model(Base):
     __tablename__ = '{{ table_name }}'
@@ -27,15 +21,3 @@ class {{ class_name }}Model(Base):
                                  {% if column.nullable -%}nullable=True {% else %} nullable=False{% endif -%})
 {% endfor %}
 
-     # Relationships
- {% for relationship in relationships %}
-    {% if relationship.relation_type =="foreign_key" %}
-    {{ relationship.variable_name }} = relationship("{{relationship.model_name }}", back_populates="{{relationship.back_populates}}" {% if not relationship.use_list -%}, uselist=False{% endif -%})
-    {% endif -%}
- {% endfor %}
-
-{% for relationship in relationships %}
-    {% if relationship.relation_type =="reverse" %}
-    {{ relationship.variable_name }} = relationship("{{relationship.model_name }}", back_populates="{{relationship.back_populates}}" {% if not relationship.use_list -%}, uselist=False{% endif -%})
-    {% endif -%}
- {% endfor %}
