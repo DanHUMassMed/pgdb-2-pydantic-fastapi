@@ -53,7 +53,8 @@ def map_pg_type_to_sqlalchemy_type(pg_type: str) -> str:
         "INTEGER": "Integer",
         "TEXT": "String",
         "VARCHAR": "String",
-        "TIMESTAMP": "TIMESTAMP",
+        "TIMESTAMP": "DateTime(timezone=True)",
+        "TIMESTAMPZ": "DateTime(timezone=True)",
         "BOOLEAN": "Boolean",
         "FLOAT": "Float",
         "DATE": "Date",
@@ -146,6 +147,6 @@ def ensure_package_dirs(path: str, stop_at: str):
 
         current = parent
         
-def get_templates_dir():        
-    templates_dir = os.path.join(os.path.dirname(__file__), "../templates")
+def get_templates_dir(gen_version:str="v1"): 
+    templates_dir = os.path.join(os.path.dirname(__file__), f"{gen_version}/templates")
     return os.path.normpath(templates_dir)

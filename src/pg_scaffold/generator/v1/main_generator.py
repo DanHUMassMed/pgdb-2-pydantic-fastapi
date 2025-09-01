@@ -8,7 +8,7 @@ from pg_scaffold.preserve_custom.preservation import CodePreservationManager
 
 class MainGenerator(CodeGenerator):
     
-    def __init__(self, sql_json_dir: str, output_dir: str):
+    def __init__(self, sql_json_dir: str, output_dir: str, gen_version: str):
         self.main_dir = output_dir
         output_dir = os.path.join(output_dir, "core")
         super().__init__(sql_json_dir, output_dir, "main.py.j2")

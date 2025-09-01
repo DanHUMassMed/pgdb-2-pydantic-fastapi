@@ -11,14 +11,14 @@ from pg_scaffold.generator.utils import ensure_package_dirs
 class CodeGenerator(ABC):
     """Abstract base class for code generators."""
 
-    def __init__(self, sql_json_dir: Any, output_dir: str, template_file_nm: str):
+    def __init__(self, sql_json_dir: Any, output_dir: str, template_file_nm: str, gen_version: str = "v1"):
         self.sql_json_dir = sql_json_dir
         self.output_dir = output_dir
         print(f"Output directory: {self.output_dir}")
         ensure_package_dirs(self.output_dir, stop_at='app')
         
         self.schema = self._load_schema_from_dir(sql_json_dir)
-        template_dir = os.path.join(os.path.dirname(__file__), "../templates")
+        template_dir = os.path.join(os.path.dirname(__file__), f"{gen_version}/templates")
         self.template_dir = os.path.normpath(template_dir)
         
         self.template = self._get_template(template_file_nm)

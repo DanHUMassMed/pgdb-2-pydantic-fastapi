@@ -29,6 +29,7 @@ fi
 
 # Grant DB connect to app user
 psql -U $(whoami) -d postgres -c "GRANT CONNECT ON DATABASE ${DATABASE} TO ${APP_USER};"
+psql -U $(whoami) -d postgres -c "ALTER DATABASE ${DATABASE}SET timezone TO 'UTC';"
 
 # Run schema and data scripts
 psql -U $(whoami) -d ${DATABASE} -f 2_grant_permissions.sql -v app_user=${APP_USER}

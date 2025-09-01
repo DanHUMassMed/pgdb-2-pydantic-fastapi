@@ -1,0 +1,47 @@
+from pydantic import BaseModel, EmailStr
+from typing import List, Optional
+from datetime import datetime, date
+from uuid import UUID
+
+from .base import BaseSchema, BaseCreateSchema, BaseReadSchema, BaseUpdateSchema
+
+class {{ class_name }}Base(BaseSchema):
+{% for column in columns %}
+   {% if not column.primary_key and not column.server_default%}
+    {{ column.name }}: {{ map_pg_column_to_python(column, column.nullable) }}
+   {% endif -%}
+{% endfor %}
+
+
+class {{ class_name }}Create({{ class_name }}Base, BaseCreateSchema):
+{% for column in columns %}
+   {% if column.primary_key %}
+    {{ column.name }}: {{ map_pg_column_to_python(column, column.nullable) }}
+   {% endif -%}
+{% endfor %}
+
+class {{ class_name }}Read({{ class_name }}Base, BaseReadSchema):
+{% for column in columns %}
+   {% if column.primary_key or column.server_default%}
+    {{ column.name }}: {{ map_pg_column_to_python(column, column.nullable) }}
+   {% endif -%}
+{% endfor %}
+
+
+class {{ class_name }}Update({{ class_name }}Base, BaseUpdateSchema):
+{% for column in columns %}
+   {% if not column.primary_key %}
+    {{ column.name }}: {{ map_pg_column_to_python(column, True) }}
+   {% endif -%}   
+{% endfor %}
+
+{% if relationships %}class {{ class_name }}WithRelations({{ class_name }}Read):{% endif -%}
+{% for relationship in relationships %}
+   {% if relationship.use_list %}
+    {{ relationship.variable_name }}: Optional[List["{{relationship.model_name }}Read"]] = None
+   {% else %}
+    {{ relationship.variable_name }}: Optional["{{relationship.model_name }}Read"] = None
+   {% endif -%}
+{% endfor %}
+
+

@@ -1,0 +1,41 @@
+from __future__ import annotations
+
+from datetime import datetime, date
+from typing import TYPE_CHECKING
+
+from sqlalchemy import String, Integer, Float, Boolean, Date, DateTime, TIMESTAMP, UUID, ForeignKey, func, text
+
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from app.models.base import Base
+
+{% if relationships %}if TYPE_CHECKING: {% endif -%}
+ {% for relationship in relationships %}
+    from app.models.{{ relationship.file_name }} import {{relationship.model_name }}
+ {% endfor %}
+
+class {{ class_name }}Model(Base):
+    __tablename__ = '{{ table_name }}'
+
+{% for column in columns %}
+    {{ column.name -}}: Mapped[{{ map_pg_column_to_sqlalchemy(column) -}}] = mapped_column({{map_pg_type_to_sqlalchemy_type(column.type) -}}, 
+                                 {{- get_foreign_key_for_column(column.name) -}}
+                                 {% if column.primary_key -%} primary_key=True, {% endif -%}
+                                 {% if column.index -%} index=True, {% endif -%}
+                                 {% if column.unique -%} unique=True, {% endif -%}
+                                 {% if not column.primary_key and column.server_default -%} server_default={{ column.server_default_value -}}, {% endif -%}
+                                 {% if column.nullable -%}nullable=True {% else %} nullable=False{% endif -%})
+{% endfor %}
+
+     # Relationships
+ {% for relationship in relationships %}
+    {% if relationship.relation_type =="foreign_key" %}
+    {{ relationship.variable_name }} = relationship("{{relationship.model_name }}", back_populates="{{relationship.back_populates}}" {% if not relationship.use_list -%}, uselist=False{% endif -%})
+    {% endif -%}
+ {% endfor %}
+
+{% for relationship in relationships %}
+    {% if relationship.relation_type =="reverse" %}
+    {{ relationship.variable_name }} = relationship("{{relationship.model_name }}", back_populates="{{relationship.back_populates}}" {% if not relationship.use_list -%}, uselist=False{% endif -%})
+    {% endif -%}
+ {% endfor %}
