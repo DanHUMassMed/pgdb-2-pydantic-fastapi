@@ -1,7 +1,9 @@
 # app/generator/utils.py
 import os
 from typing import Optional
+from typing import Any, Union
 import inflect
+import re
 
 inflector = inflect.engine()
 
@@ -47,6 +49,34 @@ def table_name_to_variable_name(table_name: str, use_singular: bool) -> str:
 
     return '_'.join(parts)  # keeps variable_name format
 
+def map_pg_column_to_typescript(pg_col: dict) -> str:
+    """Map PostgreSQL type to TypeScript type."""
+    pg_type = pg_col.get("type", "TEXT")
+
+    mapping = {
+        "INTEGER": "number",
+        "INT": "number",
+        "BIGINT": "number",
+        "SMALLINT": "number",
+        "TEXT": "string",
+        "VARCHAR": "string",
+        "CHAR": "string",
+        "TIMESTAMP": "string",  # often handled as ISO string
+        "TIMESTAMPTZ": "string",
+        "BOOLEAN": "boolean",
+        "REAL": "number",
+        "FLOAT": "number",
+        "FLOAT4": "number",
+        "FLOAT8": "number",
+        "DATE": "string",
+        "UUID": "string",
+        "JSON": "any",
+        "JSONB": "any",
+    }
+
+    ts_type = mapping.get(pg_type.upper(), "string")  # default fallback
+    return ts_type
+
 def map_pg_type_to_sqlalchemy_type(pg_type: str) -> str:
     """Map PostgreSQL type to SQLAlchemy type."""
     mapping = {
@@ -56,6 +86,7 @@ def map_pg_type_to_sqlalchemy_type(pg_type: str) -> str:
         "TIMESTAMP": "DateTime(timezone=True)",
         "TIMESTAMPZ": "DateTime(timezone=True)",
         "BOOLEAN": "Boolean",
+        "REAL": "Float",
         "FLOAT": "Float",
         "DATE": "Date",
         "UUID": "UUID",
@@ -75,6 +106,7 @@ def map_pg_column_to_sqlalchemy(pg_col: dict, optional:bool = False) -> str:
         "VARCHAR": "str",
         "TIMESTAMP": "datetime",
         "BOOLEAN": "bool",
+        "REAL": "float",
         "FLOAT": "float",
         "DATE": "date",
         "UUID": "UUID",
@@ -97,6 +129,7 @@ def map_pg_column_to_python(pg_col: dict, optional:bool = False) -> str:
         "VARCHAR": "str",
         "TIMESTAMP": "datetime",
         "BOOLEAN": "bool",
+        "REAL": "float",
         "FLOAT": "float",
         "DATE": "date",
         "UUID": "UUID",
@@ -131,6 +164,7 @@ def ensure_package_dirs(path: str, stop_at: str):
     current = path
     while True:
         # Create __init__.py if missing
+
         init_path = os.path.join(current, "__init__.py")
         os.makedirs(current, exist_ok=True)
         if not os.path.exists(init_path):
@@ -142,7 +176,7 @@ def ensure_package_dirs(path: str, stop_at: str):
             break
 
         parent = os.path.dirname(current)
-        if parent == current:
+        if not parent  or parent == current:
             break  # reached filesystem root without finding stop_at
 
         current = parent
@@ -150,3 +184,45 @@ def ensure_package_dirs(path: str, stop_at: str):
 def get_templates_dir(gen_version:str="v1"): 
     templates_dir = os.path.join(os.path.dirname(__file__), f"{gen_version}/templates")
     return os.path.normpath(templates_dir)
+
+
+
+
+# ---------- Case Converters ----------
+
+def camel_to_snake(s: str) -> str:
+    """Convert camelCase → snake_case"""
+    return re.sub(r'([A-Z])', lambda m: "_" + m.group(1).lower(), s)
+
+
+def snake_to_camel(s: str) -> str:
+    """Convert snake_case → camelCase"""
+    return re.sub(r'_([a-z])', lambda m: m.group(1).upper(), s)
+
+
+# ---------- Recursive Object Transformers ----------
+
+def to_snake_case(obj: Any) -> Any:
+    """Recursively converts dict keys from camelCase to snake_case"""
+    if isinstance(obj, list):
+        return [to_snake_case(item) for item in obj]
+    elif isinstance(obj, dict):
+        result = {}
+        for key, value in obj.items():
+            result[camel_to_snake(key)] = to_snake_case(value)
+        return result
+    else:
+        return obj  # primitive
+
+
+def to_camel_case(obj: Any) -> Any:
+    """Recursively converts dict keys from snake_case to camelCase"""
+    if isinstance(obj, list):
+        return [to_camel_case(item) for item in obj]
+    elif isinstance(obj, dict):
+        result = {}
+        for key, value in obj.items():
+            result[snake_to_camel(key)] = to_camel_case(value)
+        return result
+    else:
+        return obj  # primitive

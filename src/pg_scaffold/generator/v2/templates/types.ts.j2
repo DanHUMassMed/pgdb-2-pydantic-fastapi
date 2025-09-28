@@ -1,0 +1,15 @@
+
+
+export interface {{ class_name }}Response {
+{% for column in columns %}
+    {{ snake_to_pascal(column.name) }}?: {{ map_pg_column_to_typescript(column) }};
+{% endfor %}
+}
+
+
+export interface {{ class_name }}UI {
+{% for column in columns %}
+    {{ snake_to_pascal(column.name) }}: {{ map_pg_column_to_typescript(column) }};
+{% endfor %}
+}
+

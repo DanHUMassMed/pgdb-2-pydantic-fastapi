@@ -29,6 +29,7 @@ CREATE TABLE events (
     affiliation VARCHAR(128),
     sort_pos INT DEFAULT nextval('sort_pos_seq') NOT NULL,
     logo_path VARCHAR(256),
+    event_category VARCHAR(128) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 

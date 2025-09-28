@@ -26,6 +26,7 @@ def load_generators(version: str):
         crud_module = importlib.import_module(f"pg_scaffold.generator.{version}.crud_generator")
         api_module = importlib.import_module(f"pg_scaffold.generator.{version}.api_generator")
         main_module = importlib.import_module(f"pg_scaffold.generator.{version}.main_generator")
+        typescript_module = importlib.import_module(f"pg_scaffold.generator.{version}.typescript_generator")
 
         return {
             "ModelGenerator": model_module.ModelGenerator,
@@ -33,6 +34,7 @@ def load_generators(version: str):
             "CRUDGenerator": crud_module.CRUDGenerator,
             "APIGenerator": api_module.APIGenerator,
             "MainGenerator": main_module.MainGenerator,
+            "TypescriptGenerator": typescript_module.TypescriptGenerator,
         }
     except ModuleNotFoundError as e:
         print(f"❌ ERROR: Generator version '{version}' not found ({e}).\n")
@@ -48,6 +50,7 @@ def main():
     args = parser.parse_args()
 
     print(f"=== Running code generation with:\n\tDB:{args.pgdb}\n\tOutput Dir:{args.output_dir}\n\tVersion:{args.version}")
+    output_dir = os.path.join(args.output_dir)
     app_dir = os.path.join(args.output_dir, "app")
 
     if args.sql_json_dir is None:
@@ -78,6 +81,10 @@ def main():
 
     # Step 6: Generate main application file
     generators["MainGenerator"](args.sql_json_dir, app_dir, args.version).generate()
+
+    # Step 7: Generate typescript files
+    print(f"output_diroutput_diroutput_diroutput_diroutput_dir {output_dir}")
+    generators["TypescriptGenerator"](args.sql_json_dir, output_dir, args.version).generate()
 
     # Copy helper files
     src = os.path.join(get_templates_dir(args.version), "run_app.sh")
