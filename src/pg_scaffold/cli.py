@@ -9,7 +9,16 @@ from pg_scaffold.generator.inspector import DatabaseInspector
 from pg_scaffold.preserve_custom.preservation import CodePreservationManager
 from pg_scaffold.generator.utils import get_templates_dir
 
-
+# Define generator execution order
+GENERATOR_ORDER = [
+    "ModelGenerator",
+    "SchemaGenerator",
+    "CRUDGenerator",
+    "APIGenerator",
+    "MainGenerator",
+    "HelperGenerator",
+    "TypescriptGenerator",
+]
 class FriendlyArgumentParser(argparse.ArgumentParser):
     def error(self, message):
         self.print_help(sys.stderr)
@@ -18,27 +27,49 @@ class FriendlyArgumentParser(argparse.ArgumentParser):
         print("   python -m pg_scaffold --pgdb postgresql://user:pass@localhost/db --output ./out --version v1\n", file=sys.stderr)
         sys.exit(2)
 
-
 def load_generators(version: str):
-    try:
-        model_module = importlib.import_module(f"pg_scaffold.generator.{version}.model_generator")
-        schema_module = importlib.import_module(f"pg_scaffold.generator.{version}.schema_generator")
-        crud_module = importlib.import_module(f"pg_scaffold.generator.{version}.crud_generator")
-        api_module = importlib.import_module(f"pg_scaffold.generator.{version}.api_generator")
-        main_module = importlib.import_module(f"pg_scaffold.generator.{version}.main_generator")
-        typescript_module = importlib.import_module(f"pg_scaffold.generator.{version}.typescript_generator")
+    modules = {
+        "ModelGenerator": f"pg_scaffold.generator.{version}.model_generator",
+        "SchemaGenerator": f"pg_scaffold.generator.{version}.schema_generator",
+        "CRUDGenerator": f"pg_scaffold.generator.{version}.crud_generator",
+        "APIGenerator": f"pg_scaffold.generator.{version}.api_generator",
+        "MainGenerator": f"pg_scaffold.generator.{version}.main_generator",
+        "HelperGenerator": f"pg_scaffold.generator.{version}.helper_generator",
+        "TypescriptGenerator": f"pg_scaffold.generator.{version}.typescript_generator",
+    }
 
-        return {
-            "ModelGenerator": model_module.ModelGenerator,
-            "SchemaGenerator": schema_module.SchemaGenerator,
-            "CRUDGenerator": crud_module.CRUDGenerator,
-            "APIGenerator": api_module.APIGenerator,
-            "MainGenerator": main_module.MainGenerator,
-            "TypescriptGenerator": typescript_module.TypescriptGenerator,
-        }
-    except ModuleNotFoundError as e:
-        print(f"❌ ERROR: Generator version '{version}' not found ({e}).\n")
+    loaded = {}
+
+    for name, path in modules.items():
+        try:
+            module = importlib.import_module(path)
+            loaded[name] = getattr(module, name)
+        except ModuleNotFoundError:
+            print(f"⚠️  WARNING: {name} not found for version '{version}', skipping.")
+        except AttributeError:
+            print(f"⚠️  WARNING: {name} class missing in {path}, skipping.")
+
+    if not loaded:
+        print(f"❌ ERROR: No generators could be loaded for version '{version}'.")
         sys.exit(1)
+
+    return loaded
+
+
+def run_generators(generators: dict, args):
+    output_dir = os.path.join(args.output_dir)
+
+    for name in GENERATOR_ORDER:
+        gen_class = generators.get(name)
+        if not gen_class:
+            print(f"⚠️  Skipping {name}, not loaded.")
+            continue
+
+        print(f"✅ Running {name}...")
+
+        instance = gen_class(args.sql_json_dir, output_dir, args.version)
+        instance.generate()
+
 
 def main():
     parser = FriendlyArgumentParser(description="Generate a FastAPI app scaffold from a PostgreSQL database.")
@@ -64,37 +95,9 @@ def main():
     manager = CodePreservationManager(app_dir)
     preserved_code = manager.preserve_custom_code()
 
-    # Load generators dynamically
     generators = load_generators(args.version)
 
-    # Step 2: Generate models
-    generators["ModelGenerator"](args.sql_json_dir, app_dir, args.version).generate()
-
-    # Step 3: Generate schemas
-    generators["SchemaGenerator"](args.sql_json_dir, app_dir, args.version).generate()
-
-    # Step 4: Generate CRUD operations
-    generators["CRUDGenerator"](args.sql_json_dir, app_dir, args.version).generate()
-
-    # Step 5: Generate API endpoints
-    generators["APIGenerator"](args.sql_json_dir, app_dir, args.version).generate()
-
-    # Step 6: Generate main application file
-    generators["MainGenerator"](args.sql_json_dir, app_dir, args.version).generate()
-
-    # Step 7: Generate typescript files
-    print(f"output_diroutput_diroutput_diroutput_diroutput_dir {output_dir}")
-    generators["TypescriptGenerator"](args.sql_json_dir, output_dir, args.version).generate()
-
-    # Copy helper files
-    src = os.path.join(get_templates_dir(args.version), "run_app.sh")
-    dst = os.path.join(args.output_dir, "run_app.sh")
-    shutil.copy(src, dst)
-
-    src = os.path.join(get_templates_dir(args.version), "env")
-    dst = os.path.join(args.output_dir, ".env")
-    if not os.path.exists(dst):
-        shutil.copy(src, dst)
+    run_generators(generators, args)
 
     manager.set_target_directory(app_dir)
     manager.restore_custom_code(preserved_code)

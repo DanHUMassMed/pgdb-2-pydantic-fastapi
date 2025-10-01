@@ -9,7 +9,7 @@ from pg_scaffold.preserve_custom.preservation import CodePreservationManager
 class SchemaGenerator(CodeGenerator):
     
     def __init__(self, sql_json_dir: str, output_dir: str, gen_version: str):
-        output_dir = os.path.join(output_dir, "schemas")
+        output_dir = os.path.join(output_dir, "app/schemas")
         super().__init__(sql_json_dir, output_dir, "schema.py.j2",gen_version)
         src = os.path.join(self.template_dir, "schema_base.py")
         dst = os.path.join(output_dir, "base.py")

@@ -1,0 +1,201 @@
+{
+  "table_name": "coordinators",
+  "class_name": "Coordinator",
+  "file_name": "coordinator",
+  "columns": [
+    {
+      "name": "id",
+      "type": "INTEGER",
+      "var_len": null,
+      "nullable": false,
+      "server_default": true,
+      "server_default_value": "text(\"nextval('coordinators_id_seq')\")",
+      "index": false,
+      "unique": false,
+      "primary_key": true,
+      "indexed": true
+    },
+    {
+      "name": "event_id",
+      "type": "INTEGER",
+      "var_len": null,
+      "nullable": false,
+      "server_default": false,
+      "server_default_value": null,
+      "index": false,
+      "unique": false,
+      "primary_key": false,
+      "indexed": false
+    },
+    {
+      "name": "first_name",
+      "type": "VARCHAR",
+      "var_len": 50,
+      "nullable": false,
+      "server_default": false,
+      "server_default_value": null,
+      "index": false,
+      "unique": false,
+      "primary_key": false,
+      "indexed": false
+    },
+    {
+      "name": "last_name",
+      "type": "VARCHAR",
+      "var_len": 50,
+      "nullable": false,
+      "server_default": false,
+      "server_default_value": null,
+      "index": false,
+      "unique": false,
+      "primary_key": false,
+      "indexed": false
+    },
+    {
+      "name": "email",
+      "type": "VARCHAR",
+      "var_len": 128,
+      "nullable": false,
+      "server_default": false,
+      "server_default_value": null,
+      "index": false,
+      "unique": false,
+      "primary_key": false,
+      "indexed": false
+    },
+    {
+      "name": "phone",
+      "type": "VARCHAR",
+      "var_len": 30,
+      "nullable": true,
+      "server_default": false,
+      "server_default_value": null,
+      "index": false,
+      "unique": false,
+      "primary_key": false,
+      "indexed": false
+    },
+    {
+      "name": "title_role",
+      "type": "VARCHAR",
+      "var_len": 50,
+      "nullable": true,
+      "server_default": false,
+      "server_default_value": null,
+      "index": false,
+      "unique": false,
+      "primary_key": false,
+      "indexed": false
+    },
+    {
+      "name": "expertise_description",
+      "type": "TEXT",
+      "var_len": null,
+      "nullable": true,
+      "server_default": false,
+      "server_default_value": null,
+      "index": false,
+      "unique": false,
+      "primary_key": false,
+      "indexed": false
+    },
+    {
+      "name": "affiliation",
+      "type": "VARCHAR",
+      "var_len": 256,
+      "nullable": true,
+      "server_default": false,
+      "server_default_value": null,
+      "index": false,
+      "unique": false,
+      "primary_key": false,
+      "indexed": false
+    },
+    {
+      "name": "status",
+      "type": "VARCHAR",
+      "var_len": 50,
+      "nullable": true,
+      "server_default": false,
+      "server_default_value": null,
+      "index": false,
+      "unique": false,
+      "primary_key": false,
+      "indexed": false
+    },
+    {
+      "name": "accepted_invite_token",
+      "type": "VARCHAR",
+      "var_len": 1024,
+      "nullable": true,
+      "server_default": false,
+      "server_default_value": null,
+      "index": false,
+      "unique": false,
+      "primary_key": false,
+      "indexed": false
+    },
+    {
+      "name": "accepted_invite_date",
+      "type": "TIMESTAMP",
+      "var_len": null,
+      "nullable": true,
+      "server_default": false,
+      "server_default_value": null,
+      "index": false,
+      "unique": false,
+      "primary_key": false,
+      "indexed": false
+    },
+    {
+      "name": "accepted_invite",
+      "type": "BOOLEAN",
+      "var_len": null,
+      "nullable": false,
+      "server_default": true,
+      "server_default_value": "text(\"false\")",
+      "index": false,
+      "unique": false,
+      "primary_key": false,
+      "indexed": false
+    },
+    {
+      "name": "created_at",
+      "type": "TIMESTAMP",
+      "var_len": null,
+      "nullable": false,
+      "server_default": true,
+      "server_default_value": "func.now()",
+      "index": false,
+      "unique": false,
+      "primary_key": false,
+      "indexed": false
+    },
+    {
+      "name": "updated_at",
+      "type": "TIMESTAMP",
+      "var_len": null,
+      "nullable": false,
+      "server_default": true,
+      "server_default_value": "func.now()",
+      "index": false,
+      "unique": false,
+      "primary_key": false,
+      "indexed": false
+    }
+  ],
+  "relationships": [
+    {
+      "relationship_table_name": "coordinators",
+      "file_name": "event",
+      "model_name": "Event",
+      "variable_name": "event",
+      "back_populates": "coordinators",
+      "use_list": false,
+      "referred_table": "events",
+      "referred_column": "id",
+      "referred_variable": "event_id",
+      "relation_type": "foreign_key"
+    }
+  ]
+}

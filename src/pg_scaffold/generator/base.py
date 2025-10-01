@@ -4,14 +4,14 @@ import os
 import glob
 import json
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Optional
 from jinja2 import Environment, FileSystemLoader
 from pg_scaffold.generator.utils import ensure_package_dirs
 
 class CodeGenerator(ABC):
     """Abstract base class for code generators."""
 
-    def __init__(self, sql_json_dir: Any, output_dir: str, template_file_nm: str, gen_version: str):
+    def __init__(self, sql_json_dir: Any, output_dir: str, template_file_nm: Optional[str] = None, gen_version: str = "v1"):
         self.sql_json_dir = sql_json_dir
         self.output_dir = output_dir
         print(f"Output directory: {self.output_dir}")
@@ -21,7 +21,8 @@ class CodeGenerator(ABC):
         template_dir = os.path.join(os.path.dirname(__file__), f"{gen_version}/templates")
         self.template_dir = os.path.normpath(template_dir)
         
-        self.template = self._get_template(template_file_nm)
+        if template_file_nm is not None:
+            self.template = self._get_template(template_file_nm)
         
 
 

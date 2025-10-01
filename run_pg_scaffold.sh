@@ -32,5 +32,6 @@ sleep 1
 
 DB_URL="postgresql://app_user:user_passw0rd@localhost/evalia_db"
 OUTPUT_DIR="./generated"
+VERSION="v2"
 clear
-PYTHONPATH=./src python -m pg_scaffold --pgdb ${DB_URL} --output ${OUTPUT_DIR}
+PYTHONPATH=./src python -m pg_scaffold --pgdb ${DB_URL} --output ${OUTPUT_DIR} --version ${VERSION}

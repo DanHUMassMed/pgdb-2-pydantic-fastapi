@@ -1,0 +1,162 @@
+{
+  "table_name": "participants",
+  "class_name": "Participant",
+  "file_name": "participant",
+  "columns": [
+    {
+      "name": "id",
+      "type": "INTEGER",
+      "var_len": null,
+      "nullable": false,
+      "server_default": true,
+      "server_default_value": "text(\"nextval('participants_id_seq')\")",
+      "index": false,
+      "unique": false,
+      "primary_key": true,
+      "indexed": true
+    },
+    {
+      "name": "event_id",
+      "type": "INTEGER",
+      "var_len": null,
+      "nullable": false,
+      "server_default": false,
+      "server_default_value": null,
+      "index": false,
+      "unique": false,
+      "primary_key": false,
+      "indexed": false
+    },
+    {
+      "name": "first_name",
+      "type": "VARCHAR",
+      "var_len": 50,
+      "nullable": false,
+      "server_default": false,
+      "server_default_value": null,
+      "index": false,
+      "unique": false,
+      "primary_key": false,
+      "indexed": false
+    },
+    {
+      "name": "last_name",
+      "type": "VARCHAR",
+      "var_len": 50,
+      "nullable": false,
+      "server_default": false,
+      "server_default_value": null,
+      "index": false,
+      "unique": false,
+      "primary_key": false,
+      "indexed": false
+    },
+    {
+      "name": "email",
+      "type": "VARCHAR",
+      "var_len": 128,
+      "nullable": false,
+      "server_default": false,
+      "server_default_value": null,
+      "index": false,
+      "unique": false,
+      "primary_key": false,
+      "indexed": false
+    },
+    {
+      "name": "urgent_contact",
+      "type": "VARCHAR",
+      "var_len": 128,
+      "nullable": true,
+      "server_default": false,
+      "server_default_value": null,
+      "index": false,
+      "unique": false,
+      "primary_key": false,
+      "indexed": false
+    },
+    {
+      "name": "title_role",
+      "type": "VARCHAR",
+      "var_len": 50,
+      "nullable": true,
+      "server_default": false,
+      "server_default_value": null,
+      "index": false,
+      "unique": false,
+      "primary_key": false,
+      "indexed": false
+    },
+    {
+      "name": "affiliation",
+      "type": "VARCHAR",
+      "var_len": 256,
+      "nullable": true,
+      "server_default": false,
+      "server_default_value": null,
+      "index": false,
+      "unique": false,
+      "primary_key": false,
+      "indexed": false
+    },
+    {
+      "name": "additional_contributors",
+      "type": "TEXT",
+      "var_len": null,
+      "nullable": true,
+      "server_default": false,
+      "server_default_value": null,
+      "index": false,
+      "unique": false,
+      "primary_key": false,
+      "indexed": false
+    },
+    {
+      "name": "created_at",
+      "type": "TIMESTAMP",
+      "var_len": null,
+      "nullable": false,
+      "server_default": true,
+      "server_default_value": "func.now()",
+      "index": false,
+      "unique": false,
+      "primary_key": false,
+      "indexed": false
+    },
+    {
+      "name": "updated_at",
+      "type": "TIMESTAMP",
+      "var_len": null,
+      "nullable": false,
+      "server_default": true,
+      "server_default_value": "func.now()",
+      "index": false,
+      "unique": false,
+      "primary_key": false,
+      "indexed": false
+    }
+  ],
+  "relationships": [
+    {
+      "relationship_table_name": "participants",
+      "file_name": "event",
+      "model_name": "Event",
+      "variable_name": "event",
+      "back_populates": "participants",
+      "use_list": false,
+      "referred_table": "events",
+      "referred_column": "id",
+      "referred_variable": "event_id",
+      "relation_type": "foreign_key"
+    },
+    {
+      "relationship_table_name": "participants",
+      "file_name": "submission",
+      "model_name": "Submission",
+      "variable_name": "submissions",
+      "back_populates": "participant",
+      "use_list": true,
+      "relation_type": "reverse"
+    }
+  ]
+}

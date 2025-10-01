@@ -9,7 +9,8 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base
 
-{% if relationships %}if TYPE_CHECKING: {% endif -%}
+{% if relationships %}if TYPE_CHECKING: 
+{% endif %}
  {% for relationship in relationships %}
     from app.models.{{ relationship.file_name }} import {{relationship.model_name }}
  {% endfor %}
