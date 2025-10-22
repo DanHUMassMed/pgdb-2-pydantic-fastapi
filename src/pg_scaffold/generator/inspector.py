@@ -126,7 +126,7 @@ class DatabaseInspector:
         ]
 
         for column_name in self.inspector.get_columns(table_name):
-            print(f"Inspecting column: {column_name}")
+
             raw_default = column_name.get("default")
             python_default = self._parse_default_value(raw_default)
             columns.append(
@@ -219,7 +219,6 @@ class DatabaseInspector:
 
         reverse_relationships = []
         for table_name in self.schema.keys():  # type: ignore
-            print(f"Inspecting table: {table_name}")
             columns_info = self._columns_for_table(table_name)
             foreign_key, reverse = self._relationships_for_table(table_name)
 

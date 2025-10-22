@@ -87,19 +87,19 @@ def main():
     if args.sql_json_dir is None:
         args.sql_json_dir = os.path.join(args.output_dir, "schema_json")
 
-    # Step 1: Inspect database
+    # Inspect database
     if args.pgdb:
         inspector = DatabaseInspector(args.pgdb, args.output_dir)
         inspector.generate_scheme_json()
 
-    manager = CodePreservationManager(app_dir)
+    manager = CodePreservationManager(output_dir)
     preserved_code = manager.preserve_custom_code()
 
     generators = load_generators(args.version)
 
     run_generators(generators, args)
 
-    manager.set_target_directory(app_dir)
+    manager.set_target_directory(output_dir)
     manager.restore_custom_code(preserved_code)
 
 

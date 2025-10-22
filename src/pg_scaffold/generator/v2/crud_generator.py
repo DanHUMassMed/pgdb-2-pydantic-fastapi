@@ -20,7 +20,6 @@ class CRUDGenerator(CodeGenerator):
             
     def generate(self) -> None:
         for table_name, table_info in self.schema.items():
-            print(f"relationships: {table_info.get("relationships",[])}")
             rendered = self.template.render(
                 table_name = table_name,
                 file_name = table_info["file_name"],

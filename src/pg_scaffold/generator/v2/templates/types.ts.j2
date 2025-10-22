@@ -1,15 +1,36 @@
 
-
-export interface {{ class_name }}Response {
+export interface {{ class_name }}Base {
 {% for column in columns %}
-    {{ snake_to_camel(column.name) }}?: {{ map_pg_column_to_typescript(column) }};
+   {% if not column.primary_key and not column.server_default%}
+    {{ snake_to_camel(column.name) }}{% if column.nullable %}?{% endif -%}: {{ map_pg_column_to_typescript(column) }};
+   {% endif -%}
 {% endfor %}
 }
 
-
-export interface {{ class_name }}UI {
+export interface {{ class_name }}Create extends {{ class_name }}Base {
 {% for column in columns %}
+   {% if column.primary_key %}
     {{ snake_to_camel(column.name) }}?: {{ map_pg_column_to_typescript(column) }};
+   {% endif -%}
 {% endfor %}
 }
+
+export interface {{ class_name }}Read extends {{ class_name }}Base {
+{% for column in columns %}
+   {% if column.primary_key %}
+    {{ snake_to_camel(column.name) }}?: {{ map_pg_column_to_typescript(column) }};
+   {% elif column.server_default%}
+    {{ snake_to_camel(column.name) }}{% if column.nullable %}?{% endif -%}: {{ map_pg_column_to_typescript(column) }};
+   {% endif -%}
+{% endfor %}
+}
+
+export interface  {{ class_name }}Update extends Partial<{{ class_name }}Base> {
+{% for column in columns %}
+   {% if column.primary_key or column.server_default%}
+    {{ snake_to_camel(column.name) }}?: {{ map_pg_column_to_typescript(column) }};
+   {% endif -%}
+{% endfor %}
+}
+
 

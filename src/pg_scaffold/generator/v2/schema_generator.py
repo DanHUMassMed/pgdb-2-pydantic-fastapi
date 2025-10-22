@@ -22,11 +22,12 @@ class SchemaGenerator(CodeGenerator):
         template = self._get_template("schema__init__.py.j2")
         model_objects = [{"file_name":info["file_name"], 
                          "class_name":info["class_name"],
-                         "has_relationships": (len(info.get("relationships",[])) > 0)}
+                         "has_relationships": (len(info.get("relationships",[])) > 0),
+                         "relationships": info.get("relationships",[])}
                             for info in self.schema.values()]
         model_objects = sorted(model_objects, key=lambda x: x["file_name"])
         rendered = template.render(
-            model_objects = model_objects
+            model_objects = model_objects,
         )
         
         output_path = os.path.join(self.output_dir, "__init__.py")

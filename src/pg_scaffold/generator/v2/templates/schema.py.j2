@@ -33,5 +33,15 @@ class {{ class_name }}Update({{ class_name }}Base, BaseUpdateSchema):
     {{ column.name }}: {{ map_pg_column_to_python(column, True) }}
 {% endfor %}
 
+{% if relationships %}
+class {{ class_name }}WithRelations({{ class_name }}Read):
+{% for relationship in relationships %}
+   {% if relationship.use_list %}
+    {{ relationship.variable_name }}: Optional[List["{{relationship.model_name }}Read"]] = None
+   {% else %}
+    {{ relationship.variable_name }}: Optional["{{relationship.model_name }}Read"] = None
+   {% endif %}
+{% endfor %}
+{% endif%}
 
 

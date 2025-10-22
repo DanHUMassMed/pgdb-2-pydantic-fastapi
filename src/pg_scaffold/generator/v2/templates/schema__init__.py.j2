@@ -1,1 +1,35 @@
-# No init processing
+
+{% for model_object in model_objects %}
+from .{{ model_object.file_name }} import (
+      {{ model_object.class_name -}}Base, 
+      {{ model_object.class_name -}}Create, 
+      {{ model_object.class_name -}}Read, 
+      {{ model_object.class_name -}}Update,
+      {% if  model_object.has_relationships %}      {{ model_object.class_name -}}WithRelations {% endif -%} 
+)
+{% endfor %}
+
+
+{% for model_object in model_objects %}
+{% if  model_object.has_relationships %}
+{{ model_object.class_name }}WithRelations.model_rebuild(_types_namespace={
+{% for relationship in model_object.relationships %}
+   {% if relationship.use_list %}
+    "{{relationship.model_name }}Read":{{relationship.model_name }}Read,
+   {% else %}
+    "{{relationship.model_name }}Read":{{relationship.model_name }}Read,
+   {% endif %}
+{% endfor %}
+})
+{% endif %} 
+{% endfor %}
+
+__all__ = [
+{% for model_object in model_objects %}
+    "{{ model_object.class_name -}}Base", 
+    "{{ model_object.class_name -}}Create", 
+    "{{ model_object.class_name -}}Read", 
+    "{{ model_object.class_name -}}Update",
+    {% if  model_object.has_relationships %}    "{{ model_object.class_name }}WithRelations", {% endif %} 
+{% endfor %}
+]
