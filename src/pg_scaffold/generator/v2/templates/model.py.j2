@@ -4,7 +4,7 @@ from datetime import datetime, date
 
 from sqlalchemy import String, Integer, Float, Boolean, Date, DateTime, TIMESTAMP, UUID, ForeignKey, func, text
 
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base
 
@@ -21,3 +21,15 @@ class {{ class_name }}Model(Base):
                                  {% if column.nullable -%}nullable=True {% else %} nullable=False{% endif -%})
 {% endfor %}
 
+     # Relationships
+ {% for relationship in relationships %}
+    {% if relationship.relation_type =="foreign_key" %}
+    {{ relationship.variable_name }} = relationship("{{relationship.model_name }}Model", back_populates="{{relationship.back_populates}}" {% if not relationship.use_list -%}, uselist=False{% endif -%})
+    {% endif -%}
+ {% endfor %}
+
+{% for relationship in relationships %}
+    {% if relationship.relation_type =="reverse" %}
+    {{ relationship.variable_name }} = relationship("{{relationship.model_name }}Model", back_populates="{{relationship.back_populates}}" {% if not relationship.use_list -%}, uselist=False{% endif -%})
+    {% endif -%}
+ {% endfor %}

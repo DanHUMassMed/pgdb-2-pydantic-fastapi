@@ -3,13 +3,13 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
-from app.crud import {{ file_name }}
+from app.crud.{{ file_name }} import CRUD{{ class_name }}
 from app.schemas import {{ file_name }} as {{ file_name }}_schema
 from app.core.db import SessionLocal
 
 router = APIRouter()
 
-# Dependency
+# Dependency Injection
 def get_db():
     db = SessionLocal()
     try:
@@ -18,41 +18,43 @@ def get_db():
         db.close()
 
 
+def get_service(db: Session = Depends(get_db)) -> CRUD{{ class_name }}:
+    return CRUD{{ class_name }}(db)
 
 @router.post("/{{ table_name }}/", response_model={{ file_name }}_schema.{{ class_name }}Create)
-def create_{{ table_name }}({{ file_name }}_in: {{ file_name }}_schema.{{ class_name }}Create, db: Session = Depends(get_db)):
-    db_obj = {{ file_name }}.crud.create(db=db, obj_in={{ file_name }}_in)
+def create_{{ table_name }}({{ file_name }}_in: {{ file_name }}_schema.{{ class_name }}Create, service: CRUD{{ class_name }} = Depends(get_service)):
+    db_obj = service.create(obj_in={{ file_name }}_in)
     return db_obj
 
 
 @router.get("/{{ table_name }}/", response_model=List[{{ file_name }}_schema.{{ class_name }}Read])
-def read_{{ table_name }}(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    db_obj = {{ file_name }}.crud.get_multi(db, skip=skip, limit=limit)
+def read_{{ table_name }}(skip: int = 0, limit: int = 100, service: CRUD{{ class_name }} = Depends(get_service)):
+    db_obj = service.get_many(skip=skip, limit=limit)
     return db_obj
 
 
 @router.get("/{{ table_name }}/{{'{'}}{{ file_name }}_id{{'}'}}", response_model={{ file_name }}_schema.{{ class_name }}Read)
-def read_one_{{ table_name }}({{ file_name }}_id: int, db: Session = Depends(get_db)):
-    db_obj = {{ file_name }}.crud.get(db, id={{ file_name }}_id)
+def read_one_{{ table_name }}({{ file_name }}_id: int, service: CRUD{{ class_name }} = Depends(get_service)):
+    db_obj = service.get_by_id(id={{ file_name }}_id)
     if db_obj is None:
         raise HTTPException(status_code=404, detail="{{ class_name }} not found")
     return db_obj
 
 
 @router.put("/{{ table_name }}/{{'{'}}{{ file_name }}_id{{'}'}}", response_model={{ file_name }}_schema.{{ class_name }}Read)
-def update_{{ table_name }}({{ file_name }}_id: int, {{ file_name }}_update: {{ file_name }}_schema.{{ class_name }}Update, db: Session = Depends(get_db)):
-    db_obj = {{ file_name }}.crud.get(db, id={{ file_name }}_id)
+def update_{{ table_name }}({{ file_name }}_id: int, {{ file_name }}_update: {{ file_name }}_schema.{{ class_name }}Update, service: CRUD{{ class_name }} = Depends(get_service)):
+    db_obj = service.get_by_id(id={{ file_name }}_id)
     if db_obj is None:
         raise HTTPException(status_code=404, detail="{{ class_name }} not found")
-    return {{ file_name }}.crud.update(db=db, db_obj=db_obj, obj_in={{ file_name }}_update)
+    return service.update(db_obj=db_obj, obj_in={{ file_name }}_update)
 
 
 @router.delete("/{{ table_name }}/{{'{'}}{{ file_name }}_id{{'}'}}", response_model={{ file_name }}_schema.{{ class_name }}Read)
-def delete_{{ table_name }}({{ file_name }}_id: int, db: Session = Depends(get_db)):
-    db_obj = {{ file_name }}.crud.get(db, id={{ file_name }}_id)
+def delete_{{ table_name }}({{ file_name }}_id: int, service: CRUD{{ class_name }} = Depends(get_service)):
+    db_obj = service.get_by_id(id={{ file_name }}_id)
     if db_obj is None:
         raise HTTPException(status_code=404, detail="{{ class_name }} not found")
-    return {{ file_name }}.crud.remove(db=db, id={{ file_name }}_id)
+    return service.remove(id={{ file_name }}_id)
 
 
 

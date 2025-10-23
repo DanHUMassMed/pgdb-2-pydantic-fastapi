@@ -1,35 +1,38 @@
 from sqlalchemy.orm import Query, joinedload
 from app.crud.base import CRUDBase
+from sqlalchemy.orm import Session
 from app.models.{{ file_name }} import {{ class_name }}Model
-from app.schemas.{{ file_name }} import {{ class_name }}Create, {{ class_name }}Update
+from app.schemas.{{ file_name }} import {{ class_name }}Create, {{ class_name }}Read, {{ class_name }}Update
 
 
-
-class CRUD{{ class_name }}(CRUDBase[{{ class_name }}Model, {{ class_name }}Create, {{ class_name }}Update]):
+class CRUD{{ class_name }}(CRUDBase[{{ class_name }}Model, {{ class_name }}Create, {{ class_name }}Read, {{ class_name }}Update]):
     """Support simple Create Read Update and Delete (CRUD)"""
-    #-- Preserve Custom code START --#
-    #-- Preserve Custom code END   --#
+
+
+    def __init__(self, db: Session):
+        super().__init__({{ class_name }}Model, {{ class_name }}Create, {{ class_name }}Read, {{ class_name }}Update, db)
+
 {% if relationships %}
-    def _apply_get_hook(self, query: Query) -> Query:
+    def _get_first_hook(self, query: Query) -> Query:
         return query.options(
             {% for relationship in relationships %}
             {% if relationship.relation_type =="foreign_key" %}
-            joinedload({{ class_name }}.{{ relationship.variable_name }}),
+            joinedload({{ class_name }}Model.{{ relationship.variable_name }}),
             {% endif -%}
             {% endfor %}
         )
 
-    def _apply_multi_hook(self, query: Query) -> Query:
+    def _get_many_hook(self, query: Query) -> Query:
         return query.options(
             {% for relationship in relationships %}
-            joinedload({{ class_name }}.{{ relationship.variable_name }}),
+            joinedload({{ class_name }}Model.{{ relationship.variable_name }}),
             {% endfor %}
         )
 
-    def _apply_filter_hook(self, query: Query) -> Query:
+    def _get_many_like_hook(self, query: Query) -> Query:
         return query.options(
             {% for relationship in relationships %}
-            joinedload({{ class_name }}.{{ relationship.variable_name }}),
+            joinedload({{ class_name }}Model.{{ relationship.variable_name }}),
             {% endfor %}
         )
 
@@ -38,6 +41,6 @@ class CRUD{{ class_name }}(CRUDBase[{{ class_name }}Model, {{ class_name }}Creat
 
 {% endif -%} 
 
-crud = CRUD{{ class_name }}({{ class_name }}Model)
+
 
 
