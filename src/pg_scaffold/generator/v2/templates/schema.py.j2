@@ -5,6 +5,9 @@ from uuid import UUID
 
 from .base import BaseSchema, BaseCreateSchema, BaseReadSchema, BaseUpdateSchema
 
+#-- Preserve Custom code START: imports --#
+#-- Preserve Custom code END: imports --#
+
 class {{ class_name }}Base(BaseSchema):
 {% for column in columns %}
    {% if not column.primary_key and not column.server_default%}
@@ -44,4 +47,5 @@ class {{ class_name }}WithRelations({{ class_name }}Read):
 {% endfor %}
 {% endif%}
 
-
+#-- Preserve Custom code START: classes --#
+#-- Preserve Custom code END: classes --#

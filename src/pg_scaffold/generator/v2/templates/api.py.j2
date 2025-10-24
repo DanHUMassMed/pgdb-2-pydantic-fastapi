@@ -6,6 +6,8 @@ from sqlalchemy.orm import Session
 from app.crud.{{ file_name }} import CRUD{{ class_name }}
 from app.schemas import {{ file_name }} as {{ file_name }}_schema
 from app.core.db import SessionLocal
+#-- Preserve Custom code START: imports --#
+#-- Preserve Custom code END: imports --#
 
 router = APIRouter()
 
@@ -46,7 +48,7 @@ def update_{{ table_name }}({{ file_name }}_id: int, {{ file_name }}_update: {{ 
     db_obj = service.get_by_id(id={{ file_name }}_id)
     if db_obj is None:
         raise HTTPException(status_code=404, detail="{{ class_name }} not found")
-    return service.update(db_obj=db_obj, obj_in={{ file_name }}_update)
+    return service.update(obj_in={{ file_name }}_update)
 
 
 @router.delete("/{{ table_name }}/{{'{'}}{{ file_name }}_id{{'}'}}", response_model={{ file_name }}_schema.{{ class_name }}Read)
@@ -56,5 +58,6 @@ def delete_{{ table_name }}({{ file_name }}_id: int, service: CRUD{{ class_name 
         raise HTTPException(status_code=404, detail="{{ class_name }} not found")
     return service.remove(id={{ file_name }}_id)
 
-
+#-- Preserve Custom code START: interface --#
+#-- Preserve Custom code END: interface --#
 

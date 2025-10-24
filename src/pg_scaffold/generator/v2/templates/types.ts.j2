@@ -1,4 +1,7 @@
 
+// #-- Preserve Custom code START: imports --#
+// #-- Preserve Custom code END: imports --#
+
 export interface {{ class_name }}Base {
 {% for column in columns %}
    {% if not column.primary_key and not column.server_default%}
@@ -33,4 +36,5 @@ export interface  {{ class_name }}Update extends Partial<{{ class_name }}Base> {
 {% endfor %}
 }
 
-
+// #-- Preserve Custom code START: interfaces --#
+// #-- Preserve Custom code END: interfaces --#

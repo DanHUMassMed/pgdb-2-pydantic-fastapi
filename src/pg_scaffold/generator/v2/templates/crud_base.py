@@ -124,6 +124,18 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, ReadSchemaType, UpdateSchema
         return [self.ReadSchema.model_validate(db_obj) for db_obj in db_objs]
 
 
+    def create(self, obj_in: CreateSchemaType) -> Optional[ReadSchemaType]:
+        db_obj = None
+        valid_input = self._create_validation_hook()
+        if valid_input:
+            obj_in_data = jsonable_encoder(obj_in)
+            self.db_obj = self.model(**obj_in_data)
+            self.db.add(db_obj)
+            self.db.commit()
+            self.db.refresh(db_obj)
+        return self.ReadSchema.model_validate(db_obj)
+
+
     def update(
         self, obj_in: Union[UpdateSchemaType, Dict[str, Any]]
     ) -> Optional[ReadSchemaType]:

@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 from datetime import datetime, date
-
 from sqlalchemy import String, Integer, Float, Boolean, Date, DateTime, TIMESTAMP, UUID, ForeignKey, func, text
-
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-
 from app.models.base import Base
+
+#-- Preserve Custom code START: imports --#
+#-- Preserve Custom code END: imports --#
 
 class {{ class_name }}Model(Base):
     __tablename__ = '{{ table_name }}'
@@ -33,3 +33,6 @@ class {{ class_name }}Model(Base):
     {{ relationship.variable_name }} = relationship("{{relationship.model_name }}Model", back_populates="{{relationship.back_populates}}" {% if not relationship.use_list -%}, uselist=False{% endif -%})
     {% endif -%}
  {% endfor %}
+
+#-- Preserve Custom code START: code --#
+#-- Preserve Custom code END: code --#
