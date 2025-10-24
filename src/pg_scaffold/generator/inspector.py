@@ -187,7 +187,7 @@ class DatabaseInspector:
                     "back_populates": table_name_to_variable_name(
                         table_name, use_singular=is_one_to_one
                     ),
-                    "use_list": False,  # False means one-to-one
+                    "use_list": True,  # Always many-to-one in forward direction
                     "referred_table": referred_table,
                     "referred_column": referred_col,
                     "referred_variable": constrained_col,
@@ -206,7 +206,7 @@ class DatabaseInspector:
                     "back_populates": table_name_to_variable_name(
                         referred_table, use_singular=True
                     ),
-                    "use_list": not is_one_to_one,  # Reverse is always one-to-many unless overridden manually
+                    "use_list": True,  # Reverse is always one-to-many unless overridden manually
                     "relation_type": "reverse",  # ← added type info
                 }
             )
